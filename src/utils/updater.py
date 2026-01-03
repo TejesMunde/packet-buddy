@@ -153,6 +153,12 @@ def restart_service():
                 timeout=10
             )
         elif system == "Windows":
+            # On Windows, stop the task if running then start it
+            subprocess.run(
+                ["schtasks", "/end", "/tn", "PacketBuddy"],
+                capture_output=True,
+                timeout=5
+            )
             subprocess.run(
                 ["schtasks", "/run", "/tn", "PacketBuddy"],
                 capture_output=True,
