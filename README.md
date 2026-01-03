@@ -122,6 +122,18 @@ setup.bat
 
 # 3. Open the dashboard
 start http://127.0.0.1:7373/dashboard
+### Linux (Systemd)
+
+```bash
+# 1. Clone & Setup
+git clone https://github.com/instax-dutta/packet-buddy.git
+cd packet-buddy
+
+# 2. Run the one-time setup script
+bash service/linux/setup.sh
+
+# 3. Open the dashboard
+xdg-open http://127.0.0.1:7373/dashboard
 ```
 
 ---
@@ -220,6 +232,13 @@ launchctl load ~/Library/LaunchAgents/com.packetbuddy.plist
 .\service\windows\install-service.ps1
 ```
 
+**Linux:**
+
+```bash
+# Register as user-level systemd service
+bash service/linux/setup.sh
+```
+
 </details>
 
 ---
@@ -299,6 +318,10 @@ Each device gets a unique ID. Data is tagged with:
    # On Windows PC
    $env:NEON_DB_URL="your-connection-string"
    .\service\windows\setup.ps1
+
+   # On Linux
+   export NEON_DB_URL="your-connection-string"
+   bash service/linux/setup.sh
    ```
 
 3. **View combined data**:
@@ -490,6 +513,16 @@ tail -f ~/.packetbuddy/stdout.log
 tail -f ~/.packetbuddy/stderr.log
 ```
 
+**Linux:**
+
+```bash
+# View service journal
+journalctl --user -f -u packetbuddy.service
+
+# Or view raw logs
+tail -f ~/.packetbuddy/stdout.log
+```
+
 **Windows:**
 
 ```powershell
@@ -508,6 +541,12 @@ launchctl kickstart -k gui/$(id -u)/com.packetbuddy.daemon
 
 ```powershell
 Restart-ScheduledTask -TaskName "PacketBuddy"
+```
+
+**Linux:**
+
+```bash
+systemctl --user restart packetbuddy.service
 ```
 
 ### Check Database Size
