@@ -180,17 +180,24 @@ if !errorLevel! equ 0 (
     echo [INFO] Removed existing scheduled task
 )
 
-REM Create scheduled task
-schtasks /create /tn "%TASK_NAME%" /tr "\"%PYTHON_EXE%\" -m src.api.server" /sc onlogon /rl highest /f >nul 2>&1
+REM Create scheduled task with explicit working directory via cmd /c
+REM This ensures the python -m command finds the 'src' package
+set "TASK_CMD=cmd /c cd /d \"%PROJECT_DIR%\" && \"%PYTHON_EXE%\" -m src.api.server"
+schtasks /create /tn "%TASK_NAME%" /tr "%TASK_CMD%" /sc onlogon /rl highest /f >nul 2>&1
+
 if !errorLevel! equ 0 (
     echo [OK] Scheduled task created
 ) else (
     echo [WARN] Could not create scheduled task
 )
 
-REM Start the task
+REM Start the task immediately
 schtasks /run /tn "%TASK_NAME%" >nul 2>&1
-echo [OK] Service started
+if !errorLevel! equ 0 (
+    echo [OK] Service start signal sent
+) else (
+    echo [WARN] Could not send start signal to service
+)
 echo.
 
 REM Step 8: Set up global pb command
