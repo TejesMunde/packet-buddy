@@ -117,10 +117,13 @@ git clone https://github.com/instax-dutta/packet-buddy.git
 cd packet-buddy
 
 # 2. Right-click setup.bat > Run as administrator  
-cd service\windows
 setup.bat
 
-# 3. Open the dashboard
+# 3. Use convenience scripts (Optional)
+start.bat    # Starts headless background service
+stop.bat     # Stops the service
+
+# 4. Open the dashboard
 start http://127.0.0.1:7373/dashboard
 ### Linux (Systemd)
 
@@ -264,6 +267,11 @@ pb summary    # Lifetime stats
 pb month      # Monthly breakdown
 pb update     # Check for updates
 pb export     # Export data
+
+# Service Management (Headless Mode)
+pb service start    # Start background monitor
+pb service stop     # Stop background monitor
+pb service restart  # Reload daemon
 
 # Or using Python directly:
 python -m src.cli.main today
@@ -529,7 +537,15 @@ tail -f ~/.packetbuddy/stdout.log
 Get-Content ~\.packetbuddy\stdout.log -Tail 50 -Wait
 ```
 
-### Restart Service
+### ♻️ Restart Service (Unified)
+
+On any platform (macOS, Windows, Linux) after updating:
+
+```bash
+pb service restart
+```
+
+Or platform-specific:
 
 **macOS:**
 
@@ -540,7 +556,7 @@ launchctl kickstart -k gui/$(id -u)/com.packetbuddy.daemon
 **Windows:**
 
 ```powershell
-Restart-ScheduledTask -TaskName "PacketBuddy"
+schtasks /run /tn "PacketBuddy"
 ```
 
 **Linux:**

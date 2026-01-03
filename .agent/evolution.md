@@ -6,8 +6,9 @@ This document serves as a specialized guide for AI agents and LLMs tasked with e
 
 - **Backend:** FastAPI (Python 3.11+).
 - **Monitoring:** `psutil` + OS-specific gateway detection.
-- **Service Management:** `launchd` (macOS), `schtasks` (Windows), `systemd` (Linux).
+- **Service Management:** Unified CLI (`pb service`) abstraction over `launchd` (macOS), `schtasks` (Windows), and `systemd` (Linux).
 - **Storage:** SQLite (Local) with optional NeonDB (Cloud Sync).
+- **Runners:** Headless `pythonw.exe` for Windows background tasks.
 - **Frontend:** Vanilla JS/CSS (No heavy frameworks like React for core dashboard).
 
 ## 🚀 The `pb update` Lifecycle

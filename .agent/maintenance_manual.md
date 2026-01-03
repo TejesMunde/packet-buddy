@@ -16,7 +16,10 @@ Always check the local logs first:
 The application is designed to run as a "headless" daemon.
 
 - **macOS**: Controlled via `launchd` using the custom `.plist` in `~/Library/LaunchAgents`.
-- **Windows**: Controlled via **Task Scheduler** (`schtasks`). It is configured to run at startup with "Highest Privileges" to ensure it survives user logouts.
+- **Windows**: Controlled via **Task Scheduler** (`schtasks`).
+  - **Runner**: Uses `pythonw.exe` for silent (windowless) background execution.
+  - **Permissions**: Runs at startup with "Highest Privileges".
+  - **Shortcuts**: Root-level `start.bat` and `stop.bat` act as click-to-run wrappers for the `pb service` CLI.
 - **Linux**: Controlled via **Systemd** (`systemctl`). Installed as a user-level service (`--user`) for security and persistence.
 
 ## ♻️ Service Control Manual

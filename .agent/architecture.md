@@ -21,8 +21,10 @@ This document details the internal lifecycle of metrics within PacketBuddy. Use 
 
 The application is designed to run as a "headless" daemon.
 
-- **macOS**: Controlled via `launchd` using the custom `.plist` in `~/Library/LaunchAgents`.
-- **Windows**: Controlled via **Task Scheduler** (`schtasks`). It is configured to run at startup with "Highest Privileges" to ensure it survives user logouts.
+- **macOS**: `launchd` service path in `~/Library/LaunchAgents`.
+- **Windows**: `schtasks` running `pythonw.exe` (headless) with "Highest Privileges".
+- **Linux**: `systemd --user` unit managing the background process.
+- **CLI Abstraction**: All platforms use the unified `pb service` command group for control.
 
 ## 3. Storage Schema (SQLite)
 
