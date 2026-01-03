@@ -1,39 +1,37 @@
 <div align="center">
 
-# 📊 PacketBuddy
+# 📊 PacketBuddy — Open Source Network Usage & Bandwidth Tracker
 
-### *Ultra-Lightweight Network Usage Tracker*
+### *The Lightweight, Real-Time Internet Data Monitor for macOS & Windows*
 
 [![Platform](https://img.shields.io/badge/platform-macOS%20%7C%20Windows-blue?style=for-the-badge)](https://github.com/instax-dutta/packet-buddy)
 [![Python](https://img.shields.io/badge/python-3.11%2B-blue?style=for-the-badge&logo=python)](https://python.org)
 [![License](https://img.shields.io/badge/license-MIT-green?style=for-the-badge)](LICENSE)
-[![GitHub](https://img.shields.io/github/stars/instax-dutta/packet-buddy?style=for-the-badge)](https://github.com/instax-dutta/packet-buddy)
 
-**Track your internet usage across all your devices with a beautiful dashboard and zero configuration.**
+**PacketBuddy is an ultra-lightweight bandwidth monitor and network traffic tracker designed to help you manage internet data usage across all your devices with a beautiful dashboard and zero configuration.**
 
-[Quick Start](#-quick-start-3-minutes) • [Features](#-features) • [Screenshots](#-dashboard-preview) • [Setup](#%EF%B8%8F-installation) • [Documentation](#-documentation)
-
+[Quick Start](#-quick-start-3-minutes) • [Features](#-features) • [Screenshots](#-dashboard-preview) • [Keywords](#-search-keywords) • [Setup](#%EF%B8%8F-installation)
 </div>
 
 ---
 
 ## 🎯 What is PacketBuddy?
 
-PacketBuddy is a **set-it-and-forget-it** network monitoring tool that:
+PacketBuddy is a **high-performance bandwidth tracker** and **network usage utility** that:
 
-- 📈 **Tracks every byte** of your internet usage in real-time
-- 🌐  **Syncs across devices** - Monitor your MacBook, PC, and more in one place
-- 🎨 **Beautiful dashboard** - Visualize your data with stunning charts
-- ⚡ **Zero overhead** - Uses less than 0.5% CPU and 40MB RAM
-- 🔒 **Privacy-first** - All data stored locally, cloud sync is optional
-- 🚀 **One-time setup** - Install once, runs forever
+- 📈 **Real-time Traffic Monitoring**: Tracks every byte of your upload/download in real-time.
+- 🌐 **Cross-Platform Sync**: Monitor your MacBook, Windows PC, and servers in one centralized location.
+- 🎨 **Visual Analytics**: Beautiful, interactive charts to visualize your internet habits and daily data consumption.
+- ⚡ **Minimalist Design**: Uses less than 0.5% CPU and 40MB RAM — essentially invisible.
+- 🔒 **Privacy Focused**: All data stored locally in SQLite; cloud sync (NeonDB) is 100% optional.
+- 🚀 **Effortless Setup**: One-command installation for background monitoring.
 
-Perfect for:
+### **Perfect for:**
 
-- 📊 Tracking data usage on metered connections
-- 💰 Monitoring bandwidth consumption
-- 📱 Managing multiple devices from one dashboard
-- 🎓 Understanding your internet habits
+- 📊 **Capped Data Connections**: Stay under your ISP's monthly limit with precise tracking.
+- 💰 **Billing Accuracy**: Verify your ISP's bandwidth reports and calculate costs in INR (₹).
+- 📱 **Multi-Device Management**: See exactly how much data your phone, laptop, and PC are using.
+- 🎓 **Network Troubleshooting**: Identify ghost-usage and data-heavy applications.
 
 ---
 
@@ -654,10 +652,16 @@ Built with:
 
 ---
 
+## 🔍 Search Keywords
+
+`network monitor`, `bandwidth tracker`, `internet usage monitor`, `macOS data tracker`, `Windows bandwidth tool`, `data usage alert`, `ISP bill calculator`, `network traffic analysis`, `Python network utility`, `open source data tracker`, `real-time bandwidth monitor`, `network usage dashboard`, `data consumption tracker`, `network utility macOS`.
+
+---
+
 <div align="center">
 
 **Made with ❤️ for the internet community**
 
-[⬆ Back to Top](#-packetbuddy)
+[⬆ Back to Top](#-packetbuddy--open-source-network-usage--bandwidth-tracker)
 
 </div>
