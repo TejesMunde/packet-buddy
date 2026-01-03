@@ -1,6 +1,7 @@
 import asyncio
 import psutil
 import subprocess
+import platform
 from datetime import datetime
 from typing import Optional
 
@@ -32,16 +33,27 @@ class NetworkMonitor:
     def _get_primary_interface(self) -> Optional[str]:
         """Try to detect the primary network interface with a default gateway."""
         try:
-            # On macOS
-            result = subprocess.run(
-                ["route", "-n", "get", "default"], 
-                capture_output=True, text=True, timeout=2
-            )
-            for line in result.stdout.splitlines():
-                if "interface:" in line:
-                    return line.split(":")[1].strip()
-        except Exception:
-            pass
+            sys_platform = platform.system()
+            if sys_platform == "Darwin":
+                # On macOS
+                result = subprocess.run(
+                    ["route", "-n", "get", "default"], 
+                    capture_output=True, text=True, timeout=2
+                )
+                for line in result.stdout.splitlines():
+                    if "interface:" in line:
+                        return line.split(":")[1].strip()
+            elif sys_platform == "Windows":
+                # On Windows
+                cmd = "Get-NetRoute -DestinationPrefix 0.0.0.0/0 | Sort-Object RouteMetric | Select-Object -First 1 -ExpandProperty InterfaceAlias"
+                result = subprocess.run(
+                    ["powershell", "-Command", cmd],
+                    capture_output=True, text=True, timeout=3, shell=True
+                )
+                if result.returncode == 0 and result.stdout.strip():
+                    return result.stdout.strip()
+        except Exception as e:
+            print(f"Error detecting primary interface: {e}")
         return None
 
     def _get_network_counters(self) -> tuple:
@@ -88,14 +100,24 @@ class NetworkMonitor:
         self.running = True
         
         # Initialize counters
+        primary = self._get_primary_interface()
+        if primary:
+            print(f"Monitoring primary interface: {primary}")
+        else:
+            print("No primary interface detected, falling back to all non-loopback interfaces")
+            
         self.last_sent, self.last_received = self._get_network_counters()
         
         # Start monitoring and batch writing tasks
-        await asyncio.gather(
-            self._monitor_loop(),
-            self._batch_write_loop(),
-            self._battery_check_loop(),
-        )
+        try:
+            await asyncio.gather(
+                self._monitor_loop(),
+                self._batch_write_loop(),
+                self._battery_check_loop(),
+            )
+        except Exception as e:
+            print(f"Monitor service crash: {e}")
+            self.running = False
 
     async def _battery_check_loop(self):
         """Periodically check battery status."""
