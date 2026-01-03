@@ -1,0 +1,193 @@
+"""NeonDB sync module for cloud data replication."""
+
+import asyncio
+import asyncpg
+from typing import Optional
+
+from ..utils.config import config
+from .storage import storage
+
+
+class NeonSync:
+    """Async NeonDB synchronization manager."""
+    
+    def __init__(self):
+        self.running = False
+        self.pool: Optional[asyncpg.Pool] = None
+        self.sync_interval = config.get("sync", "interval", default=30)
+        self.retry_delay = config.get("sync", "retry_delay", default=5)
+        self.max_retries = config.get("sync", "max_retries", default=3)
+        self.enabled = config.sync_enabled
+    
+    async def start(self):
+        """Start sync service."""
+        if not self.enabled:
+            print("Sync disabled (no NEON_DB_URL configured)")
+            return
+        
+        self.running = True
+        
+        try:
+            # Create connection pool
+            self.pool = await asyncpg.create_pool(
+                config.neon_db_url,
+                min_size=1,
+                max_size=config.get("database", "pool_size", default=5),
+            )
+            
+            # Initialize remote schema
+            await self._init_remote_schema()
+            
+            # Start sync loop
+            await self._sync_loop()
+            
+        except Exception as e:
+            print(f"Sync service error: {e}")
+            self.enabled = False
+    
+    async def _init_remote_schema(self):
+        """Initialize NeonDB schema."""
+        async with self.pool.acquire() as conn:
+            # Devices table
+            await conn.execute("""
+                CREATE TABLE IF NOT EXISTS devices (
+                    device_id TEXT PRIMARY KEY,
+                    os_type TEXT NOT NULL,
+                    hostname TEXT NOT NULL,
+                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                )
+            """)
+            
+            # Usage logs
+            await conn.execute("""
+                CREATE TABLE IF NOT EXISTS usage_logs (
+                    id SERIAL PRIMARY KEY,
+                    device_id TEXT NOT NULL,
+                    timestamp TIMESTAMP NOT NULL,
+                    bytes_sent BIGINT NOT NULL,
+                    bytes_received BIGINT NOT NULL,
+                    FOREIGN KEY (device_id) REFERENCES devices(device_id)
+                )
+            """)
+            
+            await conn.execute("""
+                CREATE INDEX IF NOT EXISTS idx_usage_logs_device_timestamp 
+                ON usage_logs(device_id, timestamp)
+            """)
+            
+            # Daily aggregates
+            await conn.execute("""
+                CREATE TABLE IF NOT EXISTS daily_aggregates (
+                    device_id TEXT NOT NULL,
+                    date DATE NOT NULL,
+                    bytes_sent BIGINT NOT NULL,
+                    bytes_received BIGINT NOT NULL,
+                    PRIMARY KEY (device_id, date),
+                    FOREIGN KEY (device_id) REFERENCES devices(device_id)
+                )
+            """)
+            
+            # Monthly aggregates
+            await conn.execute("""
+                CREATE TABLE IF NOT EXISTS monthly_aggregates (
+                    device_id TEXT NOT NULL,
+                    month TEXT NOT NULL,
+                    bytes_sent BIGINT NOT NULL,
+                    bytes_received BIGINT NOT NULL,
+                    PRIMARY KEY (device_id, month),
+                    FOREIGN KEY (device_id) REFERENCES devices(device_id)
+                )
+            """)
+            
+            # Register device
+            await conn.execute("""
+                INSERT INTO devices (device_id, os_type, hostname)
+                VALUES ($1, $2, $3)
+                ON CONFLICT (device_id) DO UPDATE SET
+                    os_type = EXCLUDED.os_type,
+                    hostname = EXCLUDED.hostname
+            """, storage.device_id, storage.os_type, storage.hostname)
+    
+    async def _sync_loop(self):
+        """Main sync loop."""
+        while self.running:
+            await asyncio.sleep(self.sync_interval)
+            
+            if not self.enabled:
+                continue
+            
+            try:
+                await self._sync_data()
+            except Exception as e:
+                print(f"Sync error: {e}")
+    
+    async def _sync_data(self):
+        """Sync unsynced logs to NeonDB with retry."""
+        logs = storage.get_unsynced_logs(limit=1000)
+        
+        if not logs:
+            return
+        
+        for attempt in range(self.max_retries):
+            try:
+                async with self.pool.acquire() as conn:
+                    async with conn.transaction():
+                        # Batch insert usage logs
+                        await conn.executemany("""
+                            INSERT INTO usage_logs (device_id, timestamp, bytes_sent, bytes_received)
+                            VALUES ($1, $2, $3, $4)
+                        """, [(log["device_id"], log["timestamp"], log["bytes_sent"], log["bytes_received"]) 
+                              for log in logs])
+                        
+                        # Update aggregates in NeonDB
+                        for log in logs:
+                            # Daily aggregate
+                            date_str = log["timestamp"][:10]  # Extract date from timestamp
+                            await conn.execute("""
+                                INSERT INTO daily_aggregates (device_id, date, bytes_sent, bytes_received)
+                                VALUES ($1, $2, $3, $4)
+                                ON CONFLICT (device_id, date) DO UPDATE SET
+                                    bytes_sent = daily_aggregates.bytes_sent + EXCLUDED.bytes_sent,
+                                    bytes_received = daily_aggregates.bytes_received + EXCLUDED.bytes_received
+                            """, log["device_id"], date_str, log["bytes_sent"], log["bytes_received"])
+                            
+                            # Monthly aggregate
+                            month_str = date_str[:7]  # YYYY-MM
+                            await conn.execute("""
+                                INSERT INTO monthly_aggregates (device_id, month, bytes_sent, bytes_received)
+                                VALUES ($1, $2, $3, $4)
+                                ON CONFLICT (device_id, month) DO UPDATE SET
+                                    bytes_sent = monthly_aggregates.bytes_sent + EXCLUDED.bytes_sent,
+                                    bytes_received = monthly_aggregates.bytes_received + EXCLUDED.bytes_received
+                            """, log["device_id"], month_str, log["bytes_sent"], log["bytes_received"])
+                
+                # Mark as synced
+                log_ids = [log["id"] for log in logs]
+                storage.mark_logs_synced(log_ids)
+                
+                print(f"Synced {len(logs)} logs to NeonDB")
+                break
+                
+            except Exception as e:
+                if attempt < self.max_retries - 1:
+                    await asyncio.sleep(self.retry_delay)
+                else:
+                    raise
+    
+    async def stop(self):
+        """Stop sync service gracefully."""
+        self.running = False
+        
+        # Final sync attempt
+        if self.enabled and self.pool:
+            try:
+                await self._sync_data()
+            except Exception as e:
+                print(f"Final sync error: {e}")
+        
+        if self.pool:
+            await self.pool.close()
+
+
+# Global sync instance
+sync = NeonSync()

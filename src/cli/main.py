@@ -1,0 +1,146 @@
+"""CLI interface for PacketBuddy."""
+
+import click
+from datetime import datetime
+from tabulate import tabulate
+
+from ..core.storage import storage
+from ..utils.formatters import format_bytes, format_speed
+from ..core.monitor import monitor
+from ..api.server import run_server
+
+
+@click.group()
+def cli():
+    """PacketBuddy - Ultra-lightweight network usage tracker."""
+    pass
+
+
+@cli.command()
+def live():
+    """Show current upload/download speed."""
+    speed_sent, speed_received = monitor.get_current_speed()
+    
+    table = [
+        ["Upload Speed", format_speed(speed_sent)],
+        ["Download Speed", format_speed(speed_received)],
+        ["Total Speed", format_speed(speed_sent + speed_received)],
+    ]
+    
+    click.echo("\n" + tabulate(table, headers=["Metric", "Value"], tablefmt="fancy_grid"))
+
+
+@cli.command()
+def today():
+    """Show today's usage."""
+    bytes_sent, bytes_received = storage.get_today_usage()
+    total = bytes_sent + bytes_received
+    
+    table = [
+        ["Uploaded", format_bytes(bytes_sent)],
+        ["Downloaded", format_bytes(bytes_received)],
+        ["Total", format_bytes(total)],
+    ]
+    
+    click.echo("\n📊 Today's Usage\n")
+    click.echo(tabulate(table, headers=["Type", "Amount"], tablefmt="fancy_grid"))
+
+
+@cli.command()
+@click.argument("month", required=False)
+def month(month: str = None):
+    """Show monthly usage breakdown."""
+    if month is None:
+        month = datetime.utcnow().strftime("%Y-%m")
+    
+    daily_data = storage.get_month_usage(month)
+    
+    if not daily_data:
+        click.echo(f"\n❌ No data for {month}")
+        return
+    
+    table = []
+    total_sent = 0
+    total_received = 0
+    
+    for row in daily_data:
+        sent = row["bytes_sent"]
+        received = row["bytes_received"]
+        total_sent += sent
+        total_received += received
+        
+        table.append([
+            row["date"],
+            format_bytes(sent),
+            format_bytes(received),
+            format_bytes(sent + received)
+        ])
+    
+    click.echo(f"\n📅 Usage for {month}\n")
+    click.echo(tabulate(table, headers=["Date", "Uploaded", "Downloaded", "Total"], tablefmt="fancy_grid"))
+    
+    click.echo(f"\n📈 Month Summary:")
+    click.echo(f"   Total Uploaded: {format_bytes(total_sent)}")
+    click.echo(f"   Total Downloaded: {format_bytes(total_received)}")
+    click.echo(f"   Total: {format_bytes(total_sent + total_received)}\n")
+
+
+@cli.command()
+def summary():
+    """Show lifetime usage summary."""
+    bytes_sent, bytes_received = storage.get_lifetime_usage()
+    total = bytes_sent + bytes_received
+    
+    table = [
+        ["Total Uploaded", format_bytes(bytes_sent)],
+        ["Total Downloaded", format_bytes(bytes_received)],
+        ["Grand Total", format_bytes(total)],
+    ]
+    
+    click.echo("\n🌐 Lifetime Usage Summary\n")
+    click.echo(tabulate(table, headers=["Metric", "Amount"], tablefmt="fancy_grid"))
+
+
+@cli.command()
+@click.option("--format", type=click.Choice(["json", "csv"]), default="json", help="Export format")
+@click.option("--output", type=click.Path(), help="Output file path")
+def export(format: str, output: str = None):
+    """Export all usage data."""
+    import json
+    import csv
+    
+    logs = storage.get_all_usage_logs()
+    
+    if not logs:
+        click.echo("❌ No data to export")
+        return
+    
+    if output is None:
+        output = f"packetbuddy_export.{format}"
+    
+    if format == "json":
+        with open(output, "w") as f:
+            json.dump({"logs": logs}, f, indent=2, default=str)
+    
+    else:  # CSV
+        with open(output, "w", newline="") as f:
+            writer = csv.DictWriter(f, fieldnames=["timestamp", "bytes_sent", "bytes_received"])
+            writer.writeheader()
+            writer.writerows(logs)
+    
+    click.echo(f"✅ Exported {len(logs)} records to {output}")
+
+
+@cli.command()
+def serve():
+    """Start the API server and dashboard."""
+    run_server()
+
+
+def main():
+    """Entry point for CLI."""
+    cli()
+
+
+if __name__ == "__main__":
+    main()

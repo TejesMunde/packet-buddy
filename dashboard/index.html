@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="PacketBuddy - Ultra-lightweight network usage tracker">
+    <title>PacketBuddy Dashboard</title>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Chart.js via CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <!-- Background gradient -->
+    <div class="bg-gradient"></div>
+
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="logo">
+                <div class="logo-icon">
+                    <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="20" cy="20" r="18" stroke="url(#gradient1)" stroke-width="2.5" />
+                        <path d="M20 10v20M10 20h20" stroke="url(#gradient1)" stroke-width="2.5"
+                            stroke-linecap="round" />
+                        <defs>
+                            <linearGradient id="gradient1" x1="0" y1="0" x2="40" y2="40">
+                                <stop offset="0%" stop-color="#6366f1" />
+                                <stop offset="100%" stop-color="#8b5cf6" />
+                            </linearGradient>
+                        </defs>
+                    </svg>
+                </div>
+                <div class="logo-text">
+                    <h1>PacketBuddy</h1>
+                    <span class="tagline">Network Intelligence</span>
+                </div>
+            </div>
+            <div class="header-controls">
+                <div class="device-info">
+                    <span class="device-icon">💻</span>
+                    <span id="device-name">Loading...</span>
+                </div>
+                <div class="status-badge">
+                    <span class="status-dot"></span>
+                    <span id="status-text">Active</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Control Panel -->
+        <section class="control-panel">
+            <div class="control-card">
+                <div class="control-header">
+                    <h3>Quick Actions</h3>
+                </div>
+                <div class="control-buttons">
+                    <button id="refresh-btn" class="control-btn primary">
+                        <span class="btn-icon">🔄</span>
+                        <span>Refresh Data</span>
+                    </button>
+                    <button id="export-btn" class="control-btn">
+                        <span class="btn-icon">📥</span>
+                        <span>Export CSV</span>
+                    </button>
+                    <button id="llm-export-btn" class="control-btn">
+                        <span class="btn-icon">🤖</span>
+                        <span>LLM Export</span>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Enhanced Live Stats -->
+        <section class="stats-grid">
+            <div class="card live-card gradient-border">
+                <div class="card-glow"></div>
+                <div class="card-header">
+                    <div class="header-left">
+                        <span class="card-icon">⚡</span>
+                        <h3>Live Speed</h3>
+                    </div>
+                    <div class="pulse-indicator"></div>
+                </div>
+                <div class="stat-row">
+                    <div class="stat">
+                        <span class="stat-label">
+                            <span class="label-icon">↑</span> Upload
+                        </span>
+                        <span class="stat-value animate-number" id="live-upload">0 B/s</span>
+                        <div class="stat-bar">
+                            <div class="stat-bar-fill upload" id="upload-bar"></div>
+                        </div>
+                    </div>
+                    <div class="stat-divider"></div>
+                    <div class="stat">
+                        <span class="stat-label">
+                            <span class="label-icon">↓</span> Download
+                        </span>
+                        <span class="stat-value animate-number" id="live-download">0 B/s</span>
+                        <div class="stat-bar">
+                            <div class="stat-bar-fill download" id="download-bar"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card gradient-border">
+                <div class="card-glow"></div>
+                <div class="card-header">
+                    <div class="header-left">
+                        <span class="card-icon">📅</span>
+                        <h3>Today</h3>
+                    </div>
+                    <span class="time-badge" id="current-time"></span>
+                </div>
+                <div class="stat-row">
+                    <div class="stat">
+                        <span class="stat-label">Uploaded</span>
+                        <span class="stat-value accent-purple" id="today-upload">0 B</span>
+                    </div>
+                    <div class="stat-divider"></div>
+                    <div class="stat">
+                        <span class="stat-label">Downloaded</span>
+                        <span class="stat-value accent-blue" id="today-download">0 B</span>
+                    </div>
+                </div>
+                <div class="total-row">
+                    <span class="total-label">Total Today</span>
+                    <span class="total-value gradient-text" id="today-total">0 B</span>
+                </div>
+                <div class="progress-ring">
+                    <svg width="60" height="60">
+                        <circle cx="30" cy="30" r="25" stroke="#2d3548" stroke-width="4" fill="none" />
+                        <circle id="today-progress" cx="30" cy="30" r="25" stroke="url(#gradient2)" stroke-width="4"
+                            fill="none" stroke-dasharray="157" stroke-dashoffset="157" transform="rotate(-90 30 30)" />
+                        <defs>
+                            <linearGradient id="gradient2">
+                                <stop offset="0%" stop-color="#6366f1" />
+                                <stop offset="100%" stop-color="#8b5cf6" />
+                            </linearGradient>
+                        </defs>
+                    </svg>
+                </div>
+            </div>
+
+            <div class="card gradient-border">
+                <div class="card-glow"></div>
+                <div class="card-header">
+                    <div class="header-left">
+                        <span class="card-icon">🌐</span>
+                        <h3>Lifetime</h3>
+                    </div>
+                    <span class="badge">All Devices</span>
+                </div>
+                <div class="stat-row">
+                    <div class="stat">
+                        <span class="stat-label">Uploaded</span>
+                        <span class="stat-value accent-purple" id="lifetime-upload">0 B</span>
+                    </div>
+                    <div class="stat-divider"></div>
+                    <div class="stat">
+                        <span class="stat-label">Downloaded</span>
+                        <span class="stat-value accent-blue" id="lifetime-download">0 B</span>
+                    </div>
+                </div>
+                <div class="total-row">
+                    <span class="total-label">Grand Total</span>
+                    <span class="total-value gradient-text" id="lifetime-total">0 B</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Charts Grid -->
+        <section class="charts-grid">
+            <!-- Monthly Chart -->
+            <div class="card chart-card gradient-border">
+                <div class="card-glow"></div>
+                <div class="card-header">
+                    <div class="header-left">
+                        <span class="card-icon">📊</span>
+                        <h3>Monthly Overview</h3>
+                    </div>
+                    <div class="month-selector">
+                        <button id="prev-month" class="month-btn">
+                            <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                                <path d="M10 12L6 8l4-4" />
+                            </svg>
+                        </button>
+                        <span id="current-month" class="month-label">Loading...</span>
+                        <button id="next-month" class="month-btn">
+                            <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                                <path d="M6 4l4 4-4 4" />
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+                <div class="chart-container">
+                    <canvas id="monthly-chart"></canvas>
+                </div>
+            </div>
+
+            <!-- Distribution Charts -->
+            <div class="card chart-card gradient-border">
+                <div class="card-glow"></div>
+                <div class="card-header">
+                    <div class="header-left">
+                        <span class="card-icon">🎯</span>
+                        <h3>Today's Distribution</h3>
+                    </div>
+                </div>
+                <div class="chart-container pie-container">
+                    <canvas id="pie-chart"></canvas>
+                    <div class="chart-legend">
+                        <div class="legend-item">
+                            <span class="legend-dot upload"></span>
+                            <span>Upload</span>
+                            <span class="legend-value" id="upload-percent">0%</span>
+                        </div>
+                        <div class="legend-item">
+                            <span class="legend-dot download"></span>
+                            <span>Download</span>
+                            <span class="legend-value" id="download-percent">0%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Stats Summary Cards -->
+        <section class="summary-grid">
+            <div class="summary-card">
+                <span class="summary-icon">📈</span>
+                <div class="summary-content">
+                    <span class="summary-label">Avg Daily Usage</span>
+                    <span class="summary-value" id="avg-daily">0 MB</span>
+                </div>
+            </div>
+            <div class="summary-card">
+                <span class="summary-icon">⏱️</span>
+                <div class="summary-content">
+                    <span class="summary-label">Peak Speed Today</span>
+                    <span class="summary-value" id="peak-speed">0 MB/s</span>
+                </div>
+            </div>
+            <div class="summary-card">
+                <span class="summary-icon">📱</span>
+                <div class="summary-content">
+                    <span class="summary-label">Active Devices</span>
+                    <span class="summary-value" id="device-count">1</span>
+                </div>
+            </div>
+            <div class="summary-card">
+                <span class="summary-icon">💾</span>
+                <div class="summary-content">
+                    <span class="summary-label">Data Points</span>
+                    <span class="summary-value" id="data-points">0</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <div class="footer-content">
+                <p>PacketBuddy v1.0.0 • Ultra-lightweight network usage tracker</p>
+                <div class="footer-links">
+                    <a href="/api/export?format=json" download class="footer-link">
+                        <span>📄</span> Export JSON
+                    </a>
+                    <a href="/api/export?format=csv" download class="footer-link">
+                        <span>📊</span> Export CSV
+                    </a>
+                </div>
+            </div>
+            <div class="footer-stats">
+                <span>Last updated: <span id="last-update">Never</span></span>
+            </div>
+        </footer>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+
+</html>

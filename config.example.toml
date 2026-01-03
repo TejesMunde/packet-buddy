@@ -1,0 +1,21 @@
+# PacketBuddy Configuration
+
+[monitoring]
+poll_interval = 1              # Network polling interval in seconds
+batch_write_interval = 5       # SQLite batch write interval in seconds
+max_delta_bytes = 1000000000   # Maximum delta threshold (1GB/s) for anomaly detection
+
+[sync]
+enabled = true                 # Enable/disable NeonDB sync
+interval = 30                  # Sync interval in seconds
+retry_delay = 5                # Retry delay on failure (seconds)
+max_retries = 3                # Maximum retry attempts
+
+[api]
+host = "127.0.0.1"            # API server host
+port = 7373                    # API server port
+cors_enabled = true            # Enable CORS for local access
+
+[database]
+neon_url = ""                  # NeonDB connection URL (can also use env var NEON_DB_URL)
+pool_size = 5                  # Connection pool size for NeonDB

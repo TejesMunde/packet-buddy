@@ -1,0 +1,20 @@
+#!/bin/bash
+
+# PacketBuddy CLI Shortcut
+# This allows you to use 'pb' from anywhere
+
+# Resolve symlinks to get the actual script location
+SOURCE="${BASH_SOURCE[0]}"
+while [ -h "$SOURCE" ]; do
+    DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
+    SOURCE="$(readlink "$SOURCE")"
+    [[ $SOURCE != /* ]] && SOURCE="$DIR/$SOURCE"
+done
+SCRIPT_DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
+PROJECT_DIR="$SCRIPT_DIR"
+
+# Activate venv and run CLI
+cd "$PROJECT_DIR"
+source venv/bin/activate 2>/dev/null || true
+export PYTHONPATH="$PROJECT_DIR:$PYTHONPATH"
+python -m src.cli.main "$@"
