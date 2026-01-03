@@ -2,6 +2,7 @@
 
 import asyncio
 import asyncpg
+from datetime import datetime, date
 from typing import Optional
 
 from ..utils.config import config
@@ -133,26 +134,32 @@ class NeonSync:
                 async with self.pool.acquire() as conn:
                     async with conn.transaction():
                         # Batch insert usage logs
+                        sync_data = []
+                        for log in logs:
+                            ts = datetime.fromisoformat(log["timestamp"])
+                            sync_data.append((log["device_id"], ts, log["bytes_sent"], log["bytes_received"]))
+
                         await conn.executemany("""
                             INSERT INTO usage_logs (device_id, timestamp, bytes_sent, bytes_received)
                             VALUES ($1, $2, $3, $4)
-                        """, [(log["device_id"], log["timestamp"], log["bytes_sent"], log["bytes_received"]) 
-                              for log in logs])
+                        """, sync_data)
                         
                         # Update aggregates in NeonDB
                         for log in logs:
+                            ts = datetime.fromisoformat(log["timestamp"])
+                            log_date = ts.date()
+                            
                             # Daily aggregate
-                            date_str = log["timestamp"][:10]  # Extract date from timestamp
                             await conn.execute("""
                                 INSERT INTO daily_aggregates (device_id, date, bytes_sent, bytes_received)
                                 VALUES ($1, $2, $3, $4)
                                 ON CONFLICT (device_id, date) DO UPDATE SET
                                     bytes_sent = daily_aggregates.bytes_sent + EXCLUDED.bytes_sent,
                                     bytes_received = daily_aggregates.bytes_received + EXCLUDED.bytes_received
-                            """, log["device_id"], date_str, log["bytes_sent"], log["bytes_received"])
+                            """, log["device_id"], log_date, log["bytes_sent"], log["bytes_received"])
                             
                             # Monthly aggregate
-                            month_str = date_str[:7]  # YYYY-MM
+                            month_str = log_date.strftime("%Y-%m")
                             await conn.execute("""
                                 INSERT INTO monthly_aggregates (device_id, month, bytes_sent, bytes_received)
                                 VALUES ($1, $2, $3, $4)
