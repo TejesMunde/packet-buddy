@@ -43,6 +43,12 @@ class Config:
             "database": {
                 "neon_url": os.getenv("NEON_DB_URL", ""),
                 "pool_size": 5,
+            },
+            "auto_update": {
+                "enabled": True,
+                "check_on_startup": True,
+                "auto_apply": True,
+                "auto_restart": True,
             }
         }
         
