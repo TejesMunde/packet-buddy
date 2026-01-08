@@ -67,15 +67,24 @@ async def run_background_services():
         background_tasks.add(task)
         task.add_done_callback(background_tasks.discard)
     
-    # Run a one-time update check in the background after a short delay
+    # Run automatic update check in the background after a short delay
     async def delayed_update_check():
+        # Check if auto-update is enabled in config
+        auto_update_enabled = config.get("auto_update", "enabled", default=True)
+        check_on_startup = config.get("auto_update", "check_on_startup", default=True)
+        auto_apply = config.get("auto_update", "auto_apply", default=True)
+        auto_restart = config.get("auto_update", "auto_restart", default=True)
+        
+        if not auto_update_enabled or not check_on_startup:
+            print("ℹ️  Automatic updates disabled in config")
+            return
+        
         await asyncio.sleep(10)  # Wait for system to settle
         try:
-            # Check for updates but don't force restart on startup
-            # as it might cause an infinite loop if not careful
-            auto_update_check(force_restart=False)
+            # Automatically check and apply updates based on config
+            auto_update_check(force_restart=auto_restart, auto_apply=auto_apply)
         except Exception as e:
-            print(f"Startup update check failed: {e}")
+            print(f"Automatic update check failed: {e}")
 
     update_task = asyncio.create_task(delayed_update_check())
     background_tasks.add(update_task)

@@ -177,12 +177,13 @@ def stop_service():
         logger.error(f"Failed to stop service: {e}")
 
 
-def auto_update_check(force_restart: bool = True) -> bool:
+def auto_update_check(force_restart: bool = True, auto_apply: bool = True) -> bool:
     """
-    Check for updates and apply them if available.
+    Check for updates and optionally apply them automatically.
     
     Args:
         force_restart: Whether to restart the service after update
+        auto_apply: Whether to automatically apply updates (default: True)
         
     Returns:
         True if update was applied, False otherwise
@@ -193,15 +194,29 @@ def auto_update_check(force_restart: bool = True) -> bool:
         logger.info("No updates available")
         return False
     
-    logger.info(f"Update available: {current[:7]} -> {latest[:7]}")
+    logger.info(f"Update available: {current[:7] if current else 'unknown'} -> {latest[:7] if latest else 'unknown'}")
+    
+    if not auto_apply:
+        logger.info("Auto-apply disabled, skipping update")
+        return False
+    
+    logger.info("Automatically applying update...")
     
     if perform_update():
-        logger.info("Update applied successfully!")
+        logger.info("✅ Update applied successfully!")
+        print(f"\n{'='*60}")
+        print(f"📦 PacketBuddy Updated Successfully!")
+        print(f"{'='*60}")
+        print(f"Previous version: {current[:7] if current else 'unknown'}")
+        print(f"New version: {latest[:7] if latest else 'unknown'}")
+        print(f"{'='*60}\n")
         
         if force_restart:
-            logger.info("Restarting service...")
+            logger.info("Restarting service to apply changes...")
+            print("🔄 Restarting service to apply changes...")
             restart_service()
             
         return True
     
+    logger.error("❌ Update failed")
     return False

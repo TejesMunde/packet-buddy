@@ -471,6 +471,74 @@ interface = "en0"  # macOS Wi-Fi
 rate_per_gb = 10.00  # ₹10 per GB
 ```
 
+**Control Automatic Updates:**
+
+```toml
+[auto_update]
+enabled = true          # Enable automatic updates (recommended)
+check_on_startup = true # Check for updates when service starts
+auto_apply = true       # Automatically apply updates
+auto_restart = true     # Automatically restart after update
+```
+
+**Disable Automatic Updates** (not recommended):
+
+```toml
+[auto_update]
+enabled = false  # Disable all automatic updates
+```
+
+---
+
+## Automatic Updates
+
+**PacketBuddy automatically updates itself!** 🎉
+
+### How It Works
+
+1. **Automatic Check**: Service checks for updates 10 seconds after startup
+2. **Automatic Download**: If update is available, it's downloaded automatically
+3. **Automatic Apply**: Update is applied in the background
+4. **Automatic Restart**: Service restarts to apply changes (seamless)
+
+### Manual Updates
+
+You can also force an update manually:
+
+```bash
+# Check for updates
+pb update --check-only
+
+# Force update immediately
+pb update
+
+# Force update even if already up to date
+pb update --force
+```
+
+### Configuration
+
+Control automatic update behavior in `~/.packetbuddy/config.toml`:
+
+```toml
+[auto_update]
+enabled = true          # Master switch for auto-updates
+check_on_startup = true # Check when service starts
+auto_apply = true       # Automatically download and apply
+auto_restart = true     # Restart service after update
+```
+
+### Disabling Auto-Updates
+
+Not recommended, but you can disable if needed:
+
+```toml
+[auto_update]
+enabled = false
+```
+
+Then update manually with `pb update` when you want.
+
 ---
 
 ## CLI Commands
