@@ -173,6 +173,9 @@ if not exist "%PYTHON_EXE%" (
     set "PYTHON_EXE=%PROJECT_DIR%\venv\Scripts\python.exe"
 )
 
+REM Launcher script path
+set "LAUNCHER_SCRIPT=%PROJECT_DIR%\service\windows\launcher.py"
+
 REM Remove existing task if it exists
 schtasks /query /tn "%TASK_NAME%" >nul 2>&1
 if !errorLevel! equ 0 (
@@ -180,9 +183,14 @@ if !errorLevel! equ 0 (
     echo [INFO] Removed existing scheduled task
 )
 
-REM Create scheduled task with explicit working directory via cmd /c
-REM This ensures the python -m command finds the 'src' package
-set "TASK_CMD=cmd /c cd /d \"%PROJECT_DIR%\" && \"%PYTHON_EXE%\" -m src.api.server"
+REM Create scheduled task
+REM We execute pythonw.exe explicitly pointing to our launcher script
+REM This avoids "Screen flashing" because pythonw.exe is a GUI subsystem app (no console)
+set "TASK_CMD=\"%PYTHON_EXE%\" \"%LAUNCHER_SCRIPT%\""
+
+REM Create task
+REM /sc onlogon : Start when user logs in
+REM /rl highest : Run with highest privileges (Admin)
 schtasks /create /tn "%TASK_NAME%" /tr "%TASK_CMD%" /sc onlogon /rl highest /f >nul 2>&1
 
 if !errorLevel! equ 0 (
