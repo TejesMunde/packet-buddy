@@ -3,7 +3,7 @@
 
 [meta]
 project = "PacketBuddy"
-version = "1.1.2"
+version = "1.2.1"
 updated = "2026-01-08"
 type = "network_monitoring_tool"
 platforms = ["Windows", "macOS", "Linux"]
