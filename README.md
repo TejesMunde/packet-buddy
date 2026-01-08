@@ -1,201 +1,386 @@
-<div align="center">
+# PacketBuddy - Network Usage & Bandwidth Tracker
 
-# 📊 PacketBuddy — Open Source Network Usage & Bandwidth Tracker
+**A lightweight, cross-platform network usage monitor that runs silently in the background and provides beautiful real-time analytics.**
 
-### *The Lightweight, Real-Time Internet Data Monitor for macOS, Windows & Linux*
-
-[![Platform](https://img.shields.io/badge/platform-macOS%20%7C%20Windows%20%7C%20Linux-blue?style=for-the-badge)](https://github.com/instax-dutta/packet-buddy)
-[![Python](https://img.shields.io/badge/python-3.11%2B-blue?style=for-the-badge&logo=python)](https://python.org)
-[![License](https://img.shields.io/badge/license-MIT-green?style=for-the-badge)](LICENSE)
-
-**PacketBuddy is an ultra-lightweight bandwidth monitor and network traffic tracker designed to help you manage internet data usage across all your devices with a beautiful dashboard and zero configuration.**
-
-[Quick Start](#-quick-start-3-minutes) • [Features](#-features) • [Screenshots](#-dashboard-preview) • [Keywords](#-search-keywords) • [Setup](#%EF%B8%8F-installation)
-</div>
+[![Platform](https://img.shields.io/badge/platform-macOS%20%7C%20Windows%20%7C%20Linux-blue?style=flat-square)](https://github.com/instax-dutta/packet-buddy)
+[![Python](https://img.shields.io/badge/python-3.11%2B-blue?style=flat-square&logo=python)](https://python.org)
+[![Version](https://img.shields.io/badge/version-1.3.0-brightgreen?style=flat-square)](https://github.com/instax-dutta/packet-buddy/releases)
+[![License](https://img.shields.io/badge/license-MIT-green?style=flat-square)](LICENSE)
 
 ---
 
-## 🎯 What is PacketBuddy?
+## 📋 Table of Contents
 
-PacketBuddy is a **high-performance bandwidth tracker** and **network usage utility** that:
-
-- 📈 **Real-time Traffic Monitoring**: Tracks every byte of your upload/download in real-time.
-- 🌐 **Cross-Platform Sync**: Monitor your MacBook, Windows PC, and servers in one centralized location.
-- 🎨 **Visual Analytics**: Beautiful, interactive charts to visualize your internet habits and daily data consumption.
-- ⚡ **Minimalist Design**: Uses less than 0.5% CPU and 40MB RAM — essentially invisible.
-- 🔒 **Privacy Focused**: All data stored locally in SQLite; cloud sync (NeonDB) is 100% optional.
-- 🚀 **Effortless Setup**: One-command installation for background monitoring.
-
-### **Perfect for:**
-
-- 📊 **Capped Data Connections**: Stay under your ISP's monthly limit with precise tracking.
-- 💰 **Billing Accuracy**: Verify your ISP's bandwidth reports and calculate costs in INR (₹).
-- 📱 **Multi-Device Management**: See exactly how much data your phone, laptop, and PC are using.
-- 🎓 **Network Troubleshooting**: Identify ghost-usage and data-heavy applications.
+- [What is PacketBuddy?](#what-is-packetbuddy)
+- [Key Features](#key-features)
+- [Quick Start Guide](#quick-start-guide)
+  - [Windows Installation](#windows-installation)
+  - [macOS Installation](#macos-installation)
+  - [Linux Installation](#linux-installation)
+- [How It Works](#how-it-works)
+- [Dashboard Overview](#dashboard-overview)
+- [Multi-Device Setup](#multi-device-setup)
+- [Configuration](#configuration)
+- [CLI Commands](#cli-commands)
+- [Troubleshooting](#troubleshooting)
+- [FAQ](#faq)
 
 ---
 
-## ✨ Features
+## What is PacketBuddy?
 
-### 🎨 **Beautiful Dashboard**
+PacketBuddy is an **ultra-lightweight network monitoring tool** that tracks your internet data usage in real-time. It runs silently in the background and provides a beautiful web dashboard to visualize your network activity.
 
-- Real-time upload/download speed
-- Daily, monthly, and lifetime stats  
-- **Indian Rupee (₹) Cost Tracking** (@ ₹7.50/GB)
+### Perfect For
+
+- 📊 **Tracking data usage** on capped internet connections
+- 💰 **Monitoring costs** with built-in ₹ (INR) cost calculator
+- 🌐 **Multi-device tracking** across Windows, macOS, and Linux
+- 📱 **Verifying ISP bills** with accurate bandwidth measurements
+- 🎓 **Network troubleshooting** and identifying data-heavy applications
+
+### Why PacketBuddy?
+
+- ✅ **Minimal resource usage**: <40MB RAM, <0.5% CPU
+- ✅ **Privacy-focused**: All data stored locally (cloud sync optional)
+- ✅ **Zero configuration**: One-command installation
+- ✅ **Auto-starts on boot**: Runs silently in background
+- ✅ **Beautiful dashboard**: Real-time charts and analytics
+- ✅ **Cross-platform**: Works on Windows, macOS, and Linux
+
+---
+
+## Key Features
+
+### 🎨 Beautiful Web Dashboard
+
+- Real-time upload/download speed monitoring
+- Daily, monthly, and lifetime statistics
+- Indian Rupee (₹) cost tracking (@ ₹7.50/GB)
 - Interactive charts with Chart.js
-- Dark theme optimized
+- Dark theme optimized for readability
 
-### ⚙️ **Smart Monitoring**
+### ⚙️ Smart Monitoring
 
-- **Smart Interface Detection**: Locks to primary gateway (e.g., Wi-Fi `en0`)
-- **Zero Data Inflation**: Ignores Apple/System overhead (AirDrop, Sidecar, etc.)
-- **Battery-Aware Logic**: Self-optimizes when unplugged to save power
-- **Local Time Accuracy**: Data resets at 12:00 AM in *your* timezone
-- **Automatic Failsafes**: Handles sleep, resume, and counter resets gracefully
+- **Automatic interface detection**: Locks to your primary network interface
+- **Zero data inflation**: Filters out system overhead (AirDrop, Sidecar, etc.)
+- **Battery-aware**: Optimizes polling when on battery power
+- **Timezone-accurate**: Data resets at midnight in your local timezone
+- **Crash recovery**: Auto-restarts and handles network interruptions gracefully
 
-### 🌐 **Multi-Device Support**
+### 🌐 Multi-Device Support (Optional)
 
-- Track unlimited devices
-- Single NeonDB database  
-- Device identification
-- Aggregate reporting
+- Track unlimited devices with a single NeonDB database
+- Device identification and aggregate reporting
+- Free tier supports 10GB storage (enough for years of data)
 
-### 🔧 **Zero Configuration**
+### 🔧 Zero Configuration
 
-- One-command installation
-- Auto-starts on boot
-- Background daemon
-- **Automatic updates** with `pb update`
-
----
-
-## 📸 Dashboard Preview
-
-<div align="center">
-
-![PacketBuddy Dashboard](docs/images/dashboard.png)
-
-*Real-time network monitoring with gradient-accented stats and interactive charts*
-
-</div>
-
-### Dashboard Features
-
-- **⚡ Live Speed Monitor** - Real-time upload/download rates with premium status bars
-- **📅 Today's Usage** - Integrated **₹ Cost Tracking** with clean statistics
-- **🌐 Lifetime Totals** - Global usage and cumulative financial tracking
-- **📊 Monthly Chart** - Day-by-day interactive breakdown with Chart.js
-- **🎯 Distribution Chart** - Real-time Upload vs Download pie distribution
-- **📈 Smart Insights** - Average daily usage, peak speeds, and active devices
+- One-command installation on all platforms
+- Auto-starts on system boot
+- Background daemon mode
+- Automatic updates with `pb update`
 
 ---
 
-## 🚀 Quick Start (3 Minutes)
-
-### macOS
-
-```bash
-# 1. Clone the repository
-git clone https://github.com/instax-dutta/packet-buddy.git
-cd packet-buddy
-
-# 2. Run the one-time setup script
-chmod +x service/macos/setup.sh
-./service/macos/setup.sh
-
-# 3. Open the dashboard
-open http://127.0.0.1:7373/dashboard
-```
-
-**That's it!** PacketBuddy is now tracking your network usage and will auto-start on every boot.
-
-### Windows
-
-```bat
-# 1. Clone the repository (or download ZIP)
-git clone https://github.com/instax-dutta/packet-buddy.git
-cd packet-buddy
-
-# 2. Right-click setup.bat > Run as administrator  
-cd service\windows
-setup.bat
-
-# 3. Open the dashboard
-start http://127.0.0.1:7373/dashboard
-### Linux (Systemd)
-
-```bash
-# 1. Clone & Setup
-git clone https://github.com/instax-dutta/packet-buddy.git
-cd packet-buddy
-
-# 2. Run the one-time setup script
-bash service/linux/setup.sh
-
-# 3. Open the dashboard
-xdg-open http://127.0.0.1:7373/dashboard
-```
-
----
-
-## 🛠️ Installation
+## Quick Start Guide
 
 ### Prerequisites
 
-- **Python 3.11 or higher** ([Download here](https://www.python.org/downloads/))
-- **Git** (optional, for cloning)
-- **NeonDB Account** (optional, for multi-device sync - [Free tier available](https://neon.tech))
+**All Platforms:**
 
-### Manual Installation
+- Python 3.11 or higher ([Download here](https://www.python.org/downloads/))
+- Git (optional, for cloning)
 
-<details>
-<summary><b>Click to expand step-by-step guide</b></summary>
+**Windows Only:**
 
-#### Step 1: Get the Code
+- Administrator privileges (for Task Scheduler setup)
 
-```bash
-# Clone the repository
+**Optional:**
+
+- NeonDB account for multi-device sync ([Free tier](https://neon.tech))
+
+---
+
+### Windows Installation
+
+#### Step 1: Download PacketBuddy
+
+```batch
+# Option A: Clone with Git
 git clone https://github.com/instax-dutta/packet-buddy.git
 cd packet-buddy
 
-# Or download and extract ZIP from GitHub
+# Option B: Download ZIP from GitHub and extract
 ```
 
-#### Step 2: Set Up Python Environment
+#### Step 2: Run Setup as Administrator
+
+```batch
+# Right-click on setup.bat and select "Run as administrator"
+# OR run from Command Prompt (as Administrator):
+cd path\to\packet-buddy
+service\windows\setup.bat
+```
+
+**What the setup does:**
+
+1. ✅ Checks Python 3.11+ installation
+2. ✅ Creates virtual environment
+3. ✅ Installs dependencies
+4. ✅ Creates configuration directory (`%USERPROFILE%\.packetbuddy`)
+5. ✅ Optionally configures NeonDB cloud sync
+6. ✅ Initializes local database
+7. ✅ Creates Windows Task Scheduler task (auto-starts on login)
+8. ✅ Adds `pb` command to PATH (optional)
+
+#### Step 3: Access Dashboard
+
+The service is now running in the background! Open your browser and go to:
+
+```
+http://127.0.0.1:7373/dashboard
+```
+
+**That's it!** PacketBuddy will now track your network usage 24/7 and auto-start on every login.
+
+#### Windows Service Control
+
+```batch
+# Start service manually
+start.bat
+
+# Stop service
+stop.bat
+
+# Check service status
+schtasks /query /tn "PacketBuddy"
+
+# View service in Task Scheduler
+taskschd.msc
+```
+
+---
+
+### macOS Installation
+
+#### Step 1: Clone Repository
 
 ```bash
-# Create virtual environment
-python3 -m venv venv
-
-# Activate it
-# macOS/Linux:
-source venv/bin/activate
-# Windows:
-venv\Scripts\activate
-
-# Install dependencies
-pip install -r requirements.txt
+git clone https://github.com/instax-dutta/packet-buddy.git
+cd packet-buddy
 ```
 
-#### Step 3: Configure (Optional)
+#### Step 2: Run Setup Script
 
 ```bash
-# Copy example config
-mkdir -p ~/.packetbuddy
-cp config.example.toml ~/.packetbuddy/config.toml
-
-# Edit if needed
-nano ~/.packetbuddy/config.toml
+chmod +x service/macos/setup.sh
+./service/macos/setup.sh
 ```
 
-#### Step 4: Set Up NeonDB (Optional)
+**What the setup does:**
 
-If you want to track multiple devices:
+1. ✅ Verifies Python 3.11+ installation
+2. ✅ Creates virtual environment
+3. ✅ Installs dependencies
+4. ✅ Creates configuration directory (`~/.packetbuddy`)
+5. ✅ Optionally configures NeonDB
+6. ✅ Initializes database
+7. ✅ Creates LaunchAgent (auto-starts on login)
+8. ✅ Adds `pb` command to PATH
 
-1. Create a free account at [neon.tech](https://neon.tech)
-2. Create a new database
-3. Copy your connection string
-4. Set environment variable:
+#### Step 3: Access Dashboard
+
+```bash
+open http://127.0.0.1:7373/dashboard
+```
+
+#### macOS Service Control
+
+```bash
+# Start service
+pb service start
+
+# Stop service
+pb service stop
+
+# Restart service
+pb service restart
+
+# Check service status
+launchctl list | grep packetbuddy
+```
+
+---
+
+### Linux Installation
+
+#### Step 1: Clone Repository
+
+```bash
+git clone https://github.com/instax-dutta/packet-buddy.git
+cd packet-buddy
+```
+
+#### Step 2: Run Setup Script
+
+```bash
+bash service/linux/setup.sh
+```
+
+**What the setup does:**
+
+1. ✅ Checks Python 3.11+ installation
+2. ✅ Creates virtual environment
+3. ✅ Installs dependencies
+4. ✅ Creates configuration directory (`~/.packetbuddy`)
+5. ✅ Optionally configures NeonDB
+6. ✅ Initializes database
+7. ✅ Creates systemd user service (auto-starts on login)
+8. ✅ Adds `pb` command to PATH
+
+#### Step 3: Access Dashboard
+
+```bash
+xdg-open http://127.0.0.1:7373/dashboard
+# Or open in browser: http://127.0.0.1:7373/dashboard
+```
+
+#### Linux Service Control
+
+```bash
+# Start service
+systemctl --user start packetbuddy.service
+
+# Stop service
+systemctl --user stop packetbuddy.service
+
+# Restart service
+systemctl --user restart packetbuddy.service
+
+# Check service status
+systemctl --user status packetbuddy.service
+
+# View logs
+journalctl --user -u packetbuddy.service -f
+```
+
+---
+
+## How It Works
+
+### Architecture Overview
+
+```
+┌─────────────────────────────────────────────────────────┐
+│                    PacketBuddy                          │
+├─────────────────────────────────────────────────────────┤
+│                                                         │
+│  ┌──────────────┐      ┌──────────────┐               │
+│  │   Monitor    │─────▶│   Storage    │               │
+│  │  (psutil)    │      │  (SQLite)    │               │
+│  └──────────────┘      └──────────────┘               │
+│         │                      │                       │
+│         │                      │                       │
+│         ▼                      ▼                       │
+│  ┌──────────────┐      ┌──────────────┐               │
+│  │  FastAPI     │◀─────│    Sync      │               │
+│  │   Server     │      │  (NeonDB)    │               │
+│  └──────────────┘      └──────────────┘               │
+│         │                                              │
+│         ▼                                              │
+│  ┌──────────────┐                                     │
+│  │  Dashboard   │                                     │
+│  │  (HTML/JS)   │                                     │
+│  └──────────────┘                                     │
+└─────────────────────────────────────────────────────────┘
+```
+
+### Components
+
+1. **Monitor** (`src/core/monitor.py`)
+   - Uses `psutil` to read network interface statistics
+   - Polls every 1 second (configurable)
+   - Detects and handles counter resets (sleep/resume)
+   - Filters anomalies (>1GB/s spikes)
+
+2. **Storage** (`src/core/storage.py`)
+   - Local SQLite database (`~/.packetbuddy/packetbuddy.db`)
+   - Batch writes every 30 seconds to reduce disk I/O
+   - Transaction-safe with automatic rollback
+
+3. **Sync** (`src/core/sync.py`)
+   - Optional cloud sync to NeonDB (PostgreSQL)
+   - Syncs every 60 seconds
+   - Automatic retry with exponential backoff
+   - Works offline (buffers locally)
+
+4. **API Server** (`src/api/server.py`)
+   - FastAPI server on `http://127.0.0.1:7373`
+   - Serves dashboard and REST API
+   - CORS enabled for development
+
+5. **Dashboard** (`dashboard/`)
+   - Static HTML/CSS/JavaScript
+   - Chart.js for visualizations
+   - Auto-refreshes every 2-60 seconds
+
+---
+
+## Dashboard Overview
+
+### Live Speed Monitor
+
+Real-time upload/download speeds with animated progress bars.
+
+### Today's Usage
+
+- Total uploaded/downloaded today
+- Cost in ₹ (Indian Rupees)
+- Upload/Download distribution pie chart
+
+### Lifetime Statistics
+
+- Total data usage since installation
+- Cumulative cost tracking
+- Average daily usage
+
+### Monthly Breakdown
+
+- Interactive bar chart showing daily usage
+- Navigate between months
+- Hover for detailed stats
+
+### Quick Stats
+
+- Peak speed recorded
+- Active devices (if using NeonDB)
+- Data points collected
+- Last update timestamp
+
+---
+
+## Multi-Device Setup
+
+Track multiple devices (Windows PC, MacBook, Linux server) with a single database!
+
+### Step 1: Create NeonDB Account
+
+1. Go to [neon.tech](https://neon.tech)
+2. Sign up for free account
+3. Create a new database
+4. Copy your connection string (format: `postgresql://user:pass@host.neon.tech/db?sslmode=require`)
+
+### Step 2: Configure Each Device
+
+**During setup, when prompted:**
+
+```
+Enable cloud sync? (y/n) [n]: y
+NeonDB URL: postgresql://user:pass@host.neon.tech/db?sslmode=require
+```
+
+**Or set environment variable before setup:**
 
 ```bash
 # macOS/Linux
@@ -203,75 +388,220 @@ export NEON_DB_URL="postgresql://user:pass@host.neon.tech/db?sslmode=require"
 
 # Windows PowerShell
 $env:NEON_DB_URL="postgresql://user:pass@host.neon.tech/db?sslmode=require"
+
+# Windows Command Prompt
+setx NEON_DB_URL "postgresql://user:pass@host.neon.tech/db?sslmode=require"
 ```
 
-#### Step 5: Start PacketBuddy
+### Step 3: Run Setup on Each Device
 
-```bash
-# Start the server
-python -m src.api.server
-```
+Follow the platform-specific installation steps above. Each device will:
 
-#### Step 6: Set Up Auto-Start
+- Get a unique device ID
+- Sync to the same NeonDB database
+- Show combined stats in the dashboard
 
-**macOS:**
+### Free Tier Limits
 
-```bash
-# Use the provided script (recommended)
-./service/macos/setup.sh
+NeonDB free tier includes:
 
-# Or manually:
-cp service/macos/com.packetbuddy.plist ~/Library/LaunchAgents/
-launchctl load ~/Library/LaunchAgents/com.packetbuddy.plist
-```
+- ✅ 10 GB storage (enough for 10+ years of data)
+- ✅ Unlimited devices
+- ✅ Always-on database
 
-**Windows:**
-
-```powershell
-# Run as Administrator
-.\service\windows\install-service.ps1
-```
-
-**Linux:**
-
-```bash
-# Register as user-level systemd service
-bash service/linux/setup.sh
-```
-
-</details>
+PacketBuddy uses ~1MB per month per device.
 
 ---
 
-## 📱 Using PacketBuddy
+## Configuration
 
-### Dashboard (Web Interface)
+Configuration file location: `~/.packetbuddy/config.toml` (or `%USERPROFILE%\.packetbuddy\config.toml` on Windows)
 
-Visit **<http://127.0.0.1:7373/dashboard>** in any browser.
+### Example Configuration
 
-The dashboard auto-refreshes:
+```toml
+[api]
+host = "127.0.0.1"
+port = 7373
+cors_enabled = true
 
-- Live speed: Every 2 seconds
-- Today's stats: Every 30 seconds
-- Lifetime stats: Every 60 seconds
+[monitoring]
+poll_interval = 1  # Seconds between network checks
+batch_write_interval = 30  # Seconds between database writes
+interface = "auto"  # Network interface (auto-detect or specify like "en0")
 
-### Command Line Interface
+[sync]
+enabled = false  # Set to true if using NeonDB
+interval = 60  # Seconds between cloud syncs
 
-```bash
-# Using the 'pb' command (after setup):
-pb today      # Today's usage
-pb summary    # Lifetime stats
-pb month      # Monthly breakdown
-pb update     # Check for updates
-pb export     # Export data
-
-# Or using Python directly:
-python -m src.cli.main today
-python -m src.cli.main summary
-python -m src.cli.main update --check-only
+[cost]
+rate_per_gb = 7.50  # Cost per GB in ₹ (INR)
+currency = "INR"
 ```
 
-### Example CLI Output
+### Common Customizations
+
+**Change API Port:**
+
+```toml
+[api]
+port = 8080
+```
+
+**Reduce Resource Usage:**
+
+```toml
+[monitoring]
+poll_interval = 2  # Poll every 2 seconds instead of 1
+batch_write_interval = 60  # Write to DB every 60 seconds
+```
+
+**Specify Network Interface:**
+
+```toml
+[monitoring]
+interface = "en0"  # macOS Wi-Fi
+# interface = "eth0"  # Linux Ethernet
+# interface = "Wi-Fi"  # Windows
+```
+
+**Adjust Cost Rate:**
+
+```toml
+[cost]
+rate_per_gb = 10.00  # ₹10 per GB
+```
+
+**Control Automatic Updates:**
+
+```toml
+[auto_update]
+enabled = true          # Enable automatic updates (recommended)
+check_on_startup = true # Check for updates when service starts
+auto_apply = true       # Automatically apply updates
+auto_restart = true     # Automatically restart after update
+```
+
+**Disable Automatic Updates** (not recommended):
+
+```toml
+[auto_update]
+enabled = false  # Disable all automatic updates
+```
+
+---
+
+## Automatic Updates
+
+**PacketBuddy automatically updates itself!** 🎉
+
+### How It Works
+
+1. **Automatic Check**: Service checks for updates 10 seconds after startup
+2. **Automatic Download**: If update is available, it's downloaded automatically
+3. **Automatic Apply**: Update is applied in the background
+4. **Automatic Restart**: Service restarts to apply changes (seamless)
+
+### Manual Updates
+
+You can also force an update manually:
+
+```bash
+# Check for updates
+pb update --check-only
+
+# Force update immediately
+pb update
+
+# Force update even if already up to date
+pb update --force
+```
+
+### Configuration
+
+Control automatic update behavior in `~/.packetbuddy/config.toml`:
+
+```toml
+[auto_update]
+enabled = true          # Master switch for auto-updates
+check_on_startup = true # Check when service starts
+auto_apply = true       # Automatically download and apply
+auto_restart = true     # Restart service after update
+```
+
+### Disabling Auto-Updates
+
+Not recommended, but you can disable if needed:
+
+```toml
+[auto_update]
+enabled = false
+```
+
+Then update manually with `pb update` when you want.
+
+---
+
+## CLI Commands
+
+After installation, use the `pb` command from anywhere:
+
+### Usage Statistics
+
+```bash
+# Today's usage
+pb today
+
+# Lifetime summary
+pb summary
+
+# Monthly breakdown
+pb month
+
+# Custom date range
+pb range --from 2026-01-01 --to 2026-01-31
+```
+
+### Service Management
+
+```bash
+# Start background service
+pb service start
+
+# Stop service
+pb service stop
+
+# Restart service
+pb service restart
+
+# Check service status
+pb service status
+```
+
+### Data Export
+
+```bash
+# Export to CSV
+pb export --format csv --output data.csv
+
+# Export to JSON
+pb export --format json --output data.json
+
+# Export LLM-friendly summary
+pb export --llm
+```
+
+### Updates
+
+```bash
+# Check for updates
+pb update --check-only
+
+# Update to latest version
+pb update
+```
+
+### Example Output
 
 ```
 📊 Today's Usage
@@ -284,92 +614,220 @@ python -m src.cli.main update --check-only
 │ Downloaded │ 93.80 MB  │
 ├────────────┼───────────┤
 │ Total      │ 212.11 MB │
+├────────────┼───────────┤
+│ Cost       │ ₹1.59     │
 ╘════════════╧═══════════╛
 ```
 
 ---
 
-## 🌐 Multi-Device Setup
+## Troubleshooting
 
-PacketBuddy supports tracking multiple devices with a single NeonDB database!
+### Windows: Service Not Starting from Task Scheduler
 
-### How It Works
+**Symptoms:**
 
-Each device gets a unique ID. Data is tagged with:
+- Works from Command Prompt
+- Fails when run via Task Scheduler
 
-- Device hostname
-- Operating system
-- Unique device UUID
+**Solution:**
+Re-run the setup script as Administrator:
 
-### Setup Process
+```batch
+service\windows\setup.bat
+```
 
-1. **Set up NeonDB** (one time):
-   - Create account at [neon.tech](https://neon.tech)
-   - Create database
-   - Note your connection string
-
-2. **Configure each device**:
-
-   ```bash
-   # On MacBook
-   export NEON_DB_URL="your-connection-string"
-   ./service/macos/setup.sh
-   
-   # On Windows PC
-   $env:NEON_DB_URL="your-connection-string"
-   .\service\windows\setup.ps1
-
-   # On Linux
-   export NEON_DB_URL="your-connection-string"
-   bash service/linux/setup.sh
-   ```
-
-3. **View combined data**:
-   - All devices sync to the same database
-   - Dashboard shows device-specific and aggregate data
-   - No configuration needed - just works!
-
-### Free Tier Limits
-
-NeonDB free tier includes:
-
-- ✅ **10 GB storage** (enough for years of data)
-- ✅ **Unlimited devices**
-- ✅ **Always-on database**
-
-PacketBuddy uses ~1MB per month per device, so you can track:
-
-- 📱 **800+ devices** on free tier
-- 📅 **10+ years** of data per device
+**Details:** See [Windows Task Scheduler Fix Guide](docs/WINDOWS_TASK_SCHEDULER_FIX.md)
 
 ---
 
-## ⚡ Performance
+### Dashboard Not Loading
 
-PacketBuddy is designed to be **invisible** on your system:
+**Check if service is running:**
 
-| Metric | Value |
-|--------|-------|
-| CPU Usage | 0.2% - 0.5% |
-| RAM Usage | 28MB - 40MB |
-| Disk I/O | ~5KB/s |
-| Network Overhead | Negligible (~1KB/30s sync) |
-| Battery Impact | Minimal |
+```bash
+# Test API health endpoint
+curl http://127.0.0.1:7373/api/health
 
-**Comparison:**
+# Should return: {"status":"ok","hostname":"..."}
+```
 
-- 🟢 **PacketBuddy**: 30MB RAM, 0.3% CPU
-- 🔴 **Chrome Tab**: 200MB+ RAM, 2-5% CPU
-- 🔴 **Spotify**: 150MB+ RAM, 1-3% CPU
+**If service is not running:**
+
+```bash
+# Windows
+schtasks /run /tn "PacketBuddy"
+
+# macOS
+launchctl kickstart -k gui/$(id -u)/com.packetbuddy.daemon
+
+# Linux
+systemctl --user start packetbuddy.service
+```
+
+**Check logs:**
+
+```bash
+# Windows
+type %USERPROFILE%\.packetbuddy\stderr.log
+
+# macOS/Linux
+tail -f ~/.packetbuddy/stderr.log
+```
 
 ---
 
-## 🔒 Privacy & Security
+### Port Already in Use
+
+**Error:** `Address already in use: 127.0.0.1:7373`
+
+**Solution:** Change port in config:
+
+```toml
+[api]
+port = 8080  # Or any other available port
+```
+
+Then restart service.
+
+---
+
+### NeonDB Sync Failing
+
+**Verify connection string:**
+
+```bash
+# macOS/Linux
+echo $NEON_DB_URL
+
+# Windows
+echo %NEON_DB_URL%
+```
+
+**Test connection:**
+
+```bash
+psql "$NEON_DB_URL"
+```
+
+**Check sync logs:**
+
+```bash
+tail -f ~/.packetbuddy/stderr.log | grep sync
+```
+
+---
+
+### High Resource Usage
+
+**Reduce polling frequency:**
+
+```toml
+[monitoring]
+poll_interval = 2  # Poll every 2 seconds
+batch_write_interval = 60  # Write every 60 seconds
+```
+
+**Disable cloud sync:**
+
+```toml
+[sync]
+enabled = false
+```
+
+---
+
+### Python Not Found (Windows)
+
+**Error:** `Python 3.11+ not found`
+
+**Solution:**
+
+1. Download Python from [python.org](https://www.python.org/downloads/)
+2. During installation, **check "Add Python to PATH"**
+3. Restart Command Prompt
+4. Verify: `python --version`
+
+---
+
+## FAQ
+
+### Q: Does PacketBuddy slow down my internet?
+
+**A:** No. PacketBuddy only reads network statistics from your OS. It doesn't intercept or modify network traffic. Resource usage is <40MB RAM and <0.5% CPU.
+
+---
+
+### Q: What data does PacketBuddy collect?
+
+**A:** Only bytes sent/received and timestamps. No websites, apps, IP addresses, or personal data. See [Privacy & Security](#privacy--security).
+
+---
+
+### Q: Can I track multiple devices?
+
+**A:** Yes! Use NeonDB cloud sync (free tier) to track unlimited devices in one database. See [Multi-Device Setup](#multi-device-setup).
+
+---
+
+### Q: Does it work on mobile hotspot/tethering?
+
+**A:** Yes. PacketBuddy automatically detects your active network interface, whether it's Wi-Fi, Ethernet, or mobile hotspot.
+
+---
+
+### Q: How accurate is the tracking?
+
+**A:** Very accurate. PacketBuddy reads kernel-level network statistics directly from your OS. It includes smart filtering to avoid data inflation from system overhead.
+
+---
+
+### Q: Can I export my data?
+
+**A:** Yes. Use `pb export --format csv` or access `/api/export?format=csv` in your browser.
+
+---
+
+### Q: Does it work offline?
+
+**A:** Yes. Local tracking works 100% offline. Cloud sync (optional) requires internet but buffers data locally when offline.
+
+---
+
+### Q: How do I uninstall?
+
+**Windows:**
+
+```batch
+schtasks /delete /tn "PacketBuddy" /f
+rmdir /s /q %USERPROFILE%\.packetbuddy
+```
+
+**macOS:**
+
+```bash
+launchctl unload ~/Library/LaunchAgents/com.packetbuddy.plist
+rm ~/Library/LaunchAgents/com.packetbuddy.plist
+rm -rf ~/.packetbuddy
+```
+
+**Linux:**
+
+```bash
+systemctl --user stop packetbuddy.service
+systemctl --user disable packetbuddy.service
+rm ~/.config/systemd/user/packetbuddy.service
+rm -rf ~/.packetbuddy
+```
+
+---
+
+## Privacy & Security
 
 ### Local-First Architecture
 
 - ✅ All data written to local SQLite first
-- ✅ Cloud sync is **completely optional**
+- ✅ Cloud sync is completely optional
 - ✅ No telemetry or analytics
 - ✅ No third-party tracking
 
@@ -377,7 +835,7 @@ PacketBuddy is designed to be **invisible** on your system:
 
 ```json
 {
-  "timestamp": "2026-01-03T09:30:00Z",
+  "timestamp": "2026-01-08T10:30:00Z",
   "bytes_sent": 1048576,
   "bytes_received": 2097152,
   "device_id": "uuid-here"
@@ -401,55 +859,41 @@ PacketBuddy is designed to be **invisible** on your system:
 
 ---
 
-## 🛡️ Automatic Failsafes
+## Performance
 
-PacketBuddy includes multiple layers of protection:
+PacketBuddy is designed to be invisible:
 
-### Network Counter Resets
+| Metric | Value |
+|--------|-------|
+| CPU Usage | 0.2% - 0.5% |
+| RAM Usage | 28MB - 40MB |
+| Disk I/O | ~5KB/s |
+| Network Overhead | ~1KB/30s (sync) |
+| Battery Impact | Minimal |
 
-```python
-if new_value < old_value:
-    # Sleep/resume detected - skip and reset
-    skip_sample()
-```
+**Comparison:**
 
-### Anomaly Detection
-
-```python
-if delta > 1GB/second:
-    # Likely a driver glitch - skip
-    skip_sample()
-```
-
-### Crash Recovery
-
-- Auto-restart on crash (LaunchAgent/Task Scheduler)
-- Graceful shutdown with data flush
-- Transaction-safe writes
-
-### Network Interruptions
-
-- Automatic retry with exponential backoff
-- Local buffering during offline periods
-- Never lose data
+- 🟢 PacketBuddy: 30MB RAM, 0.3% CPU
+- 🔴 Chrome Tab: 200MB+ RAM, 2-5% CPU
+- 🔴 Spotify: 150MB+ RAM, 1-3% CPU
 
 ---
 
-## 📊 API Reference
+## API Reference
 
 Base URL: `http://127.0.0.1:7373/api`
 
 ### Endpoints
 
-| Endpoint | Method | Description | Response Time |
-|----------|--------|-------------|---------------|
-| `/health` | GET | Service status & device info | <10ms |
-| `/live` | GET | Current upload/download speed | <10ms |
-| `/today` | GET | Today's total usage | <50ms |
-| `/month?month=YYYY-MM` | GET | Monthly breakdown | <100ms |
-| `/range?from=DATE&to=DATE` | GET | Custom date range | <200ms |
-| `/summary` | GET | Lifetime totals | <50ms |
-| `/export?format=json\|csv` | GET | Export all data | Varies |
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/health` | GET | Service status & device info |
+| `/live` | GET | Current upload/download speed |
+| `/today` | GET | Today's total usage |
+| `/month?month=YYYY-MM` | GET | Monthly breakdown |
+| `/range?from=DATE&to=DATE` | GET | Custom date range |
+| `/summary` | GET | Lifetime totals |
+| `/export?format=json\|csv` | GET | Export all data |
 
 ### Example Response
 
@@ -462,215 +906,37 @@ Base URL: `http://127.0.0.1:7373/api`
     "sent": "120.00 MB",
     "received": "500.00 MB",
     "total": "620.00 MB"
+  },
+  "cost": {
+    "total": {
+      "cost": 4.88,
+      "cost_formatted": "₹4.88"
+    }
   }
 }
 ```
 
 ---
 
-## 🎨 Customization
+## Contributing
 
-### Change Port
-
-Edit `~/.packetbuddy/config.toml`:
-
-```toml
-[api]
-port = 8080  # Your preferred port
-```
-
-### Adjust Polling Rate
-
-```toml
-[monitoring]
-poll_interval = 2  # Poll every 2 seconds instead of 1
-```
-
-### Disable Cloud Sync
-
-```toml
-[sync]
-enabled = false
-```
-
-### Batch Write Interval
-
-```toml
-[monitoring]
-batch_write_interval = 10  # Write to SQLite every 10 seconds
-```
-
----
-
-## 🧹 Maintenance
-
-### View Logs
-
-**macOS:**
-
-```bash
-tail -f ~/.packetbuddy/stdout.log
-tail -f ~/.packetbuddy/stderr.log
-```
-
-**Linux:**
-
-```bash
-# View service journal
-journalctl --user -f -u packetbuddy.service
-
-# Or view raw logs
-tail -f ~/.packetbuddy/stdout.log
-```
-
-**Windows:**
-
-```powershell
-Get-Content ~\.packetbuddy\stdout.log -Tail 50 -Wait
-```
-
-### Restart Service
-
-**macOS:**
-
-```bash
-launchctl kickstart -k gui/$(id -u)/com.packetbuddy.daemon
-```
-
-**Windows:**
-
-```powershell
-Restart-ScheduledTask -TaskName "PacketBuddy"
-```
-
-**Linux:**
-
-```bash
-systemctl --user restart packetbuddy.service
-```
-
-### Check Database Size
-
-```bash
-ls -lh ~/.packetbuddy/packetbuddy.db
-```
-
-### Backup Data
-
-```bash
-# Backup local database
-cp ~/.packetbuddy/packetbuddy.db ~/packetbuddy-backup-$(date +%Y%m%d).db
-
-# Export to CSV
-python -m src.cli.main export --format csv --output backup.csv
-```
-
----
-
-## 🐛 Troubleshooting
-
-<details>
-<summary><b>Service won't start</b></summary>
-
-1. Check if port 7373 is in use:
-
-   ```bash
-   lsof -i :7373  # macOS/Linux
-   netstat -ano | findstr :7373  # Windows
-   ```
-
-2. View error logs:
-
-   ```bash
-   tail -f ~/.packetbuddy/stderr.log
-   ```
-
-3. Test manually:
-
-   ```bash
-   source venv/bin/activate
-   python -m src.api.server
-   ```
-
-</details>
-
-<details>
-<summary><b>Dashboard not loading</b></summary>
-
-1. Check if service is running:
-
-   ```bash
-   curl http://127.0.0.1:7373/api/health
-   ```
-
-2. Try a different browser
-3. Clear browser cache
-4. Check firewall settings
-
-</details>
-
-<details>
-<summary><b>NeonDB sync failing</b></summary>
-
-1. Verify connection string:
-
-   ```bash
-   echo $NEON_DB_URL
-   ```
-
-2. Test connection:
-
-   ```bash
-   psql "$NEON_DB_URL"
-   ```
-
-3. Check logs for specific errors
-4. Verify network connectivity
-
-</details>
-
-<details>
-<summary><b>High resource usage</b></summary>
-
-Increase poll interval in config:
-
-```toml
-[monitoring]
-poll_interval = 2  # or 5 for even lower usage
-```
-
-</details>
-
----
-
-## 📚 Documentation
-
-- [Quick Start Guide](QUICKSTART.md) - Fast 3-minute setup
-- [Contributing Guide](CONTRIBUTING.md) - How to contribute
-- [API Documentation](#-api-reference) - HTTP API reference
-- [GitHub Repository](https://github.com/instax-dutta/packet-buddy) - Star us! ⭐
-
----
-
-## 🤝 Contributing
-
-Contributions welcome! Here's how:
+Contributions welcome! See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
 
 1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
+2. Create feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit changes (`git commit -m 'Add amazing feature'`)
+4. Push to branch (`git push origin feature/amazing-feature`)
+5. Open Pull Request
 
 ---
 
-## 📄 License
+## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+MIT License - see [LICENSE](LICENSE) file for details.
 
 ---
 
-## 🙏 Credits
+## Credits
 
 Built with:
 
@@ -682,18 +948,18 @@ Built with:
 
 ---
 
-## 💬 Support
+## Support
 
 - 📫 **Issues**: [GitHub Issues](https://github.com/instax-dutta/packet-buddy/issues)
 - 💬 **Discussions**: [GitHub Discussions](https://github.com/instax-dutta/packet-buddy/discussions)
 - ⭐ **Star us**: [GitHub](https://github.com/instax-dutta/packet-buddy)
-- 🔄 **Auto-Update**: Run `pb update` to get the latest features
+- 🔄 **Auto-Update**: Run `pb update` to get latest features
 
 ---
 
-## 🔍 Search Keywords
+## Keywords
 
-`network monitor`, `bandwidth tracker`, `internet usage monitor`, `macOS data tracker`, `Windows bandwidth tool`, `Linux network monitor`, `data usage alert`, `ISP bill calculator`, `network traffic analysis`, `Python network utility`, `open source data tracker`, `real-time bandwidth monitor`, `network usage dashboard`, `data consumption tracker`, `network utility macOS`, `systemd network service`.
+`network monitor`, `bandwidth tracker`, `internet usage monitor`, `data usage tracker`, `network traffic analysis`, `ISP bill calculator`, `multi-device tracking`, `cross-platform network tool`, `Python network utility`, `real-time bandwidth monitor`, `network usage dashboard`, `data consumption tracker`, `open source network monitor`, `lightweight bandwidth tool`, `macOS network monitor`, `Windows bandwidth tracker`, `Linux network utility`
 
 ---
 
@@ -701,6 +967,6 @@ Built with:
 
 **Made with ❤️ for the internet community**
 
-[⬆ Back to Top](#-packetbuddy--open-source-network-usage--bandwidth-tracker)
+[⬆ Back to Top](#packetbuddy---network-usage--bandwidth-tracker)
 
 </div>

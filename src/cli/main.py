@@ -139,27 +139,39 @@ def serve():
 
 @cli.command()
 @click.option("--check-only", is_flag=True, help="Only check for updates, don't apply")
-def update(check_only: bool):
-    """Check for and apply updates from GitHub."""
+@click.option("--force", is_flag=True, help="Force update even if already up to date")
+def update(check_only: bool, force: bool):
+    """Check for and apply updates from GitHub.
+    
+    Note: PacketBuddy automatically updates in the background.
+    Use this command to force an immediate update or check status.
+    """
     from ..utils.updater import check_for_updates, perform_update, restart_service
     
     click.echo("\n🔍 Checking for updates...")
+    click.echo("ℹ️  PacketBuddy automatically updates in the background")
+    click.echo("   This command is for manual/force updates\n")
     
     has_update, current, latest = check_for_updates()
     
-    if not has_update:
+    if not has_update and not force:
         if current and latest:
             click.echo(f"✅ You're already on the latest version ({current[:7]})")
+            click.echo("\n💡 Tip: Updates are applied automatically when available")
         else:
             click.echo("ℹ️  Auto-update not available (not a git repository)")
         return
     
-    click.echo(f"\n📦 Update available!")
-    click.echo(f"   Current: {current[:7]}")
-    click.echo(f"   Latest:  {latest[:7]}")
+    if force and not has_update:
+        click.echo(f"⚠️  Forcing update even though you're on latest version ({current[:7]})")
+    else:
+        click.echo(f"\n📦 Update available!")
+        click.echo(f"   Current: {current[:7]}")
+        click.echo(f"   Latest:  {latest[:7]}")
     
     if check_only:
-        click.echo("\nℹ️  Run 'pb update' to apply the update")
+        click.echo("\nℹ️  Run 'pb update' to apply the update immediately")
+        click.echo("   (or wait for automatic update in background)")
         return
     
     if click.confirm("\n🚀 Apply update now?", default=True):

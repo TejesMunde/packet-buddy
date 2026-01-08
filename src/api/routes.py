@@ -11,6 +11,7 @@ from fastapi.responses import JSONResponse, StreamingResponse
 
 from ..core.storage import storage
 from ..core.monitor import monitor
+from ..core.sync import sync
 from ..core.device import get_device_info
 from ..utils.formatters import format_usage_response
 from ..utils.cost_calculator import get_cost_breakdown, DEFAULT_COST_PER_GB_INR
@@ -24,12 +25,18 @@ async def health():
     """Service health check."""
     device_id, os_type, hostname = get_device_info()
     
-    # Calculate uptime (simplified for now)
+    # Combined local + global health
+    device_count = 1
+    if sync.enabled:
+        device_count = await sync.get_device_count()
+
     return {
         "status": "running",
         "device_id": device_id,
         "os_type": os_type,
         "hostname": hostname,
+        "device_count": device_count,
+        "sync_enabled": sync.enabled,
         "timestamp": datetime.utcnow().isoformat()
     }
 
@@ -51,9 +58,20 @@ async def today():
     bytes_sent, bytes_received = storage.get_today_usage()
     
     response = format_usage_response(bytes_sent, bytes_received)
+    
     # Add cost information
     cost_data = get_cost_breakdown(bytes_sent, bytes_received)
     response["cost"] = cost_data
+
+    # Add global today stats if enabled
+    if sync.enabled:
+        global_sent, global_received = await sync.get_global_today_usage()
+        # Ensure global is at least as much as local
+        global_sent = max(global_sent, bytes_sent)
+        global_received = max(global_received, bytes_received)
+        
+        response["global"] = format_usage_response(global_sent, global_received)
+        response["global"]["cost"] = get_cost_breakdown(global_sent, global_received)
     
     return response
 
@@ -122,9 +140,20 @@ async def summary():
     bytes_sent, bytes_received = storage.get_lifetime_usage()
     
     response = format_usage_response(bytes_sent, bytes_received)
+    
     # Add cost information
     cost_data = get_cost_breakdown(bytes_sent, bytes_received)
     response["cost"] = cost_data
+
+    # Add global lifetime stats if enabled
+    if sync.enabled:
+        global_sent, global_received = await sync.get_global_lifetime_usage()
+        # Merge local and global
+        global_sent = max(global_sent, bytes_sent)
+        global_received = max(global_received, bytes_received)
+        
+        response["global"] = format_usage_response(global_sent, global_received)
+        response["global"]["cost"] = get_cost_breakdown(global_sent, global_received)
     
     return response
 

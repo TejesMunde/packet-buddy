@@ -26,7 +26,7 @@ class Config:
         default_config = {
             "monitoring": {
                 "poll_interval": 1,  # seconds
-                "batch_write_interval": 5,  # seconds
+                "batch_write_interval": 30,  # seconds (optimized for resource efficiency)
                 "max_delta_bytes": 1_000_000_000,  # 1GB/s threshold for anomaly detection
             },
             "sync": {
@@ -43,6 +43,12 @@ class Config:
             "database": {
                 "neon_url": os.getenv("NEON_DB_URL", ""),
                 "pool_size": 5,
+            },
+            "auto_update": {
+                "enabled": True,
+                "check_on_startup": True,
+                "auto_apply": True,
+                "auto_restart": True,
             }
         }
         

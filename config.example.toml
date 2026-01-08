@@ -19,3 +19,10 @@ cors_enabled = true            # Enable CORS for local access
 [database]
 neon_url = ""                  # NeonDB connection URL (can also use env var NEON_DB_URL)
 pool_size = 5                  # Connection pool size for NeonDB
+
+[auto_update]
+enabled = true                 # Enable automatic updates (recommended)
+check_on_startup = true        # Check for updates when service starts
+auto_apply = true              # Automatically apply updates when available
+auto_restart = true            # Automatically restart service after update
+

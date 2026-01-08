@@ -47,10 +47,13 @@ if ($existingTask) {
     Unregister-ScheduledTask -TaskName $taskName -Confirm:$false
 }
 
-# Create action
+# Use the dedicated launcher script that sets up environment properly
+$launcherScript = Join-Path $projectPath "run-service.bat"
+
+# Create action using the launcher script
 $action = New-ScheduledTaskAction `
-    -Execute $execPath `
-    -Argument "-m src.api.server" `
+    -Execute "cmd.exe" `
+    -Argument "/c `"$launcherScript`"" `
     -WorkingDirectory $projectPath
 
 # Create trigger (at startup)
@@ -102,6 +105,7 @@ try {
     Write-Host "  ✓ PacketBuddy installed successfully!" -ForegroundColor Green
     Write-Host "═══════════════════════════════════════════════════" -ForegroundColor Green
     Write-Host ""
+    Write-Host "Service is running in the background" -ForegroundColor Cyan
     Write-Host "Dashboard: http://127.0.0.1:7373/dashboard" -ForegroundColor Cyan
     Write-Host ""
     Write-Host "To uninstall:" -ForegroundColor Yellow
