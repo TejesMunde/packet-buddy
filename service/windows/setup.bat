@@ -180,10 +180,10 @@ if !errorLevel! equ 0 (
     echo [INFO] Removed existing scheduled task
 )
 
-REM Create scheduled task with explicit working directory and PYTHONPATH via cmd /c
-REM This ensures the python -m command finds the 'src' package correctly
-set "TASK_CMD=cmd /c cd /d \"%PROJECT_DIR%\" && set PYTHONPATH=%PROJECT_DIR%&& \"%PYTHON_EXE%\" -m src.api.server"
-schtasks /create /tn "%TASK_NAME%" /tr "%TASK_CMD%" /sc onlogon /rl highest /f >nul 2>&1
+REM Create scheduled task using the dedicated launcher script
+REM The launcher script properly sets up PYTHONPATH and working directory
+set "LAUNCHER_SCRIPT=%PROJECT_DIR%\run-service.bat"
+schtasks /create /tn "%TASK_NAME%" /tr "\"%LAUNCHER_SCRIPT%\"" /sc onlogon /rl highest /f >nul 2>&1
 
 if !errorLevel! equ 0 (
     echo [OK] Scheduled task created
