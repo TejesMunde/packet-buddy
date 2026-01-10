@@ -38,6 +38,13 @@ solution = [
   "Verify: python --version"
 ]
 
+[windows_watchdog]
+purpose = "Automatic crash recovery for Windows"
+setup = "Run powershell as Admin: $action = New-ScheduledTaskAction -Execute '...\\watchdog.bat'; ...; Register-ScheduledTask -TaskName 'PacketBuddyWatchdog' ..."
+check_status = "Get-ScheduledTask -TaskName 'PacketBuddyWatchdog'"
+how_it_works = "Polls API /health every 30s. If down, runs 'schtasks /run /tn PacketBuddy'"
+manual_test = "Kill pythonw process → Wait 30s → Check /api/health"
+
 [file_locations]
 config = {windows="%USERPROFILE%\\.packetbuddy\\config.toml", unix="~/.packetbuddy/config.toml"}
 database = {windows="%USERPROFILE%\\.packetbuddy\\packetbuddy.db", unix="~/.packetbuddy/packetbuddy.db"}

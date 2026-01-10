@@ -4,7 +4,7 @@
 
 [![Platform](https://img.shields.io/badge/platform-macOS%20%7C%20Windows%20%7C%20Linux-blue?style=flat-square)](https://github.com/instax-dutta/packet-buddy)
 [![Python](https://img.shields.io/badge/python-3.11%2B-blue?style=flat-square&logo=python)](https://python.org)
-[![Version](https://img.shields.io/badge/version-1.3.0-brightgreen?style=flat-square)](https://github.com/instax-dutta/packet-buddy/releases)
+[![Version](https://img.shields.io/badge/version-1.3.1-brightgreen?style=flat-square)](https://github.com/instax-dutta/packet-buddy/releases)
 [![License](https://img.shields.io/badge/license-MIT-green?style=flat-square)](LICENSE)
 
 ---
@@ -23,6 +23,7 @@
 - [Configuration](#configuration)
 - [CLI Commands](#cli-commands)
 - [Troubleshooting](#troubleshooting)
+- [Automatic Crash Recovery (Windows)](#automatic-crash-recovery-windows)
 - [FAQ](#faq)
 
 ---
@@ -159,6 +160,28 @@ schtasks /query /tn "PacketBuddy"
 # View service in Task Scheduler
 taskschd.msc
 ```
+
+#### Windows: Automatic Crash Recovery (Watchdog)
+
+PacketBuddy includes a lightweight watchdog that monitors the service and automatically restarts it if it crashes (e.g., during high-load exports).
+
+**To enable the watchdog:**
+
+Run this in **PowerShell as Administrator**:
+
+```powershell
+$action = New-ScheduledTaskAction -Execute "c:\Users\$env:USERNAME\packet-buddy\watchdog.bat"
+$trigger = New-ScheduledTaskTrigger -AtLogOn
+$principal = New-ScheduledTaskPrincipal -UserId $env:USERNAME -LogonType Interactive
+$settings = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries -StartWhenAvailable -ExecutionTimeLimit (New-TimeSpan -Days 0)
+Register-ScheduledTask -TaskName "PacketBuddyWatchdog" -Action $action -Trigger $trigger -Principal $principal -Settings $settings -Force
+Start-ScheduledTask -TaskName "PacketBuddyWatchdog"
+```
+
+**Verification:**
+
+- **Check status**: `Get-ScheduledTask -TaskName "PacketBuddyWatchdog"`
+- **How it works**: Polls `http://127.0.0.1:7373/api/health` every 30s; restarts `PacketBuddy` task if unresponsive.
 
 ---
 
