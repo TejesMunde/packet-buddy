@@ -152,6 +152,12 @@ async function loadTodayStats() {
         const todayHeader = document.querySelector('.stats-grid .card:nth-child(2) .badge, .stats-grid .card:nth-child(2) .time-badge');
         if (todayHeader) todayHeader.textContent = data.global ? 'Total Network' : 'This Device';
 
+        // Update peak speed from server today stats if available
+        if (displayData.peak_speed && displayData.peak_speed > peakSpeed) {
+            peakSpeed = displayData.peak_speed;
+            document.getElementById('peak-speed').textContent = displayData.human_readable.peak_speed;
+        }
+
         // Display cost data
         if (displayData.cost && displayData.cost.total) {
             document.getElementById('today-cost').textContent = displayData.cost.total.cost_formatted;
@@ -394,8 +400,9 @@ function formatBytes(bytes) {
     const units = ['B', 'KB', 'MB', 'GB', 'TB'];
     const k = 1000;
     const i = Math.floor(Math.log(bytes) / Math.log(k));
+    const size = bytes / Math.pow(k, i);
 
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + units[i];
+    return (i === 0 ? Math.round(size) : size.toFixed(2)) + ' ' + units[i];
 }
 
 // Update last update time

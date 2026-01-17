@@ -184,6 +184,7 @@ class NetworkMonitor:
                     self.pending_writes.append({
                         "bytes_sent": delta_sent,
                         "bytes_received": delta_received,
+                        "speed": int(self.current_speed_sent + self.current_speed_received),
                         "timestamp": datetime.now()
                     })
                 
@@ -210,6 +211,7 @@ class NetworkMonitor:
                     storage.insert_usage(
                         bytes_sent=entry["bytes_sent"],
                         bytes_received=entry["bytes_received"],
+                        speed=entry["speed"],
                         timestamp=entry["timestamp"]
                     )
                 
@@ -230,6 +232,7 @@ class NetworkMonitor:
                     storage.insert_usage(
                         bytes_sent=entry["bytes_sent"],
                         bytes_received=entry["bytes_received"],
+                        speed=entry["speed"],
                         timestamp=entry["timestamp"]
                     )
                 except Exception as e:

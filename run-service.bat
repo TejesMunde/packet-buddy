@@ -13,11 +13,12 @@ cd /d "%PROJECT_DIR%"
 REM Set PYTHONPATH so Python can find the src module
 set "PYTHONPATH=%PROJECT_DIR%"
 
-REM Detect pythonw.exe (windowless) for headless operation
+REM Use pythonw.exe for silent background operation
 set "PYTHON_EXE=%PROJECT_DIR%\venv\Scripts\pythonw.exe"
-if not exist "%PYTHON_EXE%" (
-    set "PYTHON_EXE=%PROJECT_DIR%\venv\Scripts\python.exe"
-)
 
-REM Run the server module
-"%PYTHON_EXE%" -m src.api.server
+REM Redirect output to log files for debugging
+set "LOG_DIR=%USERPROFILE%\.packetbuddy"
+if not exist "%LOG_DIR%" mkdir "%LOG_DIR%"
+
+REM Run the server module silently with output logging
+"%PYTHON_EXE%" -m src.api.server > "%LOG_DIR%\stdout.log" 2> "%LOG_DIR%\stderr.log"

@@ -55,9 +55,9 @@ async def live():
 @router.get("/today")
 async def today():
     """Today's total usage."""
-    bytes_sent, bytes_received = storage.get_today_usage()
+    bytes_sent, bytes_received, peak_speed = storage.get_today_usage()
     
-    response = format_usage_response(bytes_sent, bytes_received)
+    response = format_usage_response(bytes_sent, bytes_received, peak_speed)
     
     # Add cost information
     cost_data = get_cost_breakdown(bytes_sent, bytes_received)

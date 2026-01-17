@@ -2,7 +2,7 @@
 
 [meta]
 doc_type = "architecture"
-updated = "2026-01-10"
+updated = "2026-01-17"
 
 [layers]
 presentation = ["Web Dashboard (HTML/CSS/JS)", "CLI (Python argparse)"]
@@ -21,11 +21,10 @@ features = {reset_detection="Skip on counter reset", anomaly_filter=">1GB/s reje
 file = "src/core/storage.py"
 pattern = "Repository"
 db = "SQLite"
-schema = """
 network_usage(id, timestamp, bytes_sent, bytes_received, device_id, synced)
+daily_aggregates(device_id, date, bytes_sent, bytes_received, peak_speed)
 device_info(device_id, hostname, platform, created_at)
 indexes: timestamp, device_timestamp, synced
-"""
 optimization = {batch_writes="Every 30s", indexed_queries="O(log n)", connection_pooling="Reuse conn"}
 
 [components.sync]
@@ -47,7 +46,7 @@ endpoints = {
   summary = "GET /api/summary → lifetime totals",
   export = "GET /api/export?format=json|csv → all data"
 }
-response_format = "{bytes_sent, bytes_received, total_bytes, human_readable{sent, received, total}, cost{...}}"
+response_format = "{bytes_sent, bytes_received, total_bytes, peak_speed, human_readable{sent, received, total, peak_speed}, cost{...}}"
 
 [data_flow.write]
 steps = [

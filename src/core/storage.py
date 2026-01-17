@@ -78,10 +78,17 @@ class Storage:
                     date DATE NOT NULL,
                     bytes_sent INTEGER NOT NULL,
                     bytes_received INTEGER NOT NULL,
+                    peak_speed INTEGER DEFAULT 0,
                     PRIMARY KEY (device_id, date),
                     FOREIGN KEY (device_id) REFERENCES devices(device_id)
                 )
             """)
+
+            # Migration: Add peak_speed if it doesn't exist (for existing databases)
+            try:
+                cursor.execute("ALTER TABLE daily_aggregates ADD COLUMN peak_speed INTEGER DEFAULT 0")
+            except sqlite3.OperationalError:
+                pass # Already exists
             
             # Monthly aggregates
             cursor.execute("""
@@ -109,7 +116,7 @@ class Storage:
                 VALUES (?, ?, ?)
             """, (self.device_id, self.os_type, self.hostname))
     
-    def insert_usage(self, bytes_sent: int, bytes_received: int, timestamp: Optional[datetime] = None):
+    def insert_usage(self, bytes_sent: int, bytes_received: int, timestamp: Optional[datetime] = None, speed: int = 0):
         """Insert a usage log entry."""
         if timestamp is None:
             timestamp = datetime.now()
@@ -124,12 +131,13 @@ class Storage:
             # Update daily aggregate
             today = timestamp.date()
             cursor.execute("""
-                INSERT INTO daily_aggregates (device_id, date, bytes_sent, bytes_received)
-                VALUES (?, ?, ?, ?)
+                INSERT INTO daily_aggregates (device_id, date, bytes_sent, bytes_received, peak_speed)
+                VALUES (?, ?, ?, ?, ?)
                 ON CONFLICT(device_id, date) DO UPDATE SET
                     bytes_sent = bytes_sent + excluded.bytes_sent,
-                    bytes_received = bytes_received + excluded.bytes_received
-            """, (self.device_id, today, bytes_sent, bytes_received))
+                    bytes_received = bytes_received + excluded.bytes_received,
+                    peak_speed = MAX(peak_speed, excluded.peak_speed)
+            """, (self.device_id, today, bytes_sent, bytes_received, speed))
             
             # Update monthly aggregate
             month = timestamp.strftime("%Y-%m")
@@ -169,22 +177,22 @@ class Storage:
                 WHERE id IN ({placeholders})
             """, log_ids)
     
-    def get_today_usage(self) -> Tuple[int, int]:
-        """Get today's total usage."""
+    def get_today_usage(self) -> Tuple[int, int, int]:
+        """Get today's total usage and peak speed (sent, received, peak)."""
         today = date.today()
         
         with self.get_connection() as conn:
             cursor = conn.cursor()
             cursor.execute("""
-                SELECT bytes_sent, bytes_received
+                SELECT bytes_sent, bytes_received, peak_speed
                 FROM daily_aggregates
                 WHERE device_id = ? AND date = ?
             """, (self.device_id, today))
             
             row = cursor.fetchone()
             if row:
-                return row["bytes_sent"], row["bytes_received"]
-            return 0, 0
+                return row["bytes_sent"], row["bytes_received"], row["peak_speed"]
+            return 0, 0, 0
     
     def get_month_usage(self, month: str) -> List[Dict]:
         """Get daily breakdown for a specific month (YYYY-MM)."""

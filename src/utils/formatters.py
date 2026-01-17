@@ -28,11 +28,11 @@ def format_speed(bytes_per_second: float) -> str:
     return f"{format_bytes(int(bytes_per_second))}/s"
 
 
-def format_usage_response(bytes_sent: int, bytes_received: int) -> Dict:
+def format_usage_response(bytes_sent: int, bytes_received: int, peak_speed: int = 0) -> Dict:
     """Format usage data for API responses."""
     total_bytes = bytes_sent + bytes_received
     
-    return {
+    response = {
         "bytes_sent": bytes_sent,
         "bytes_received": bytes_received,
         "total_bytes": total_bytes,
@@ -42,3 +42,9 @@ def format_usage_response(bytes_sent: int, bytes_received: int) -> Dict:
             "total": format_bytes(total_bytes),
         }
     }
+    
+    if peak_speed > 0:
+        response["peak_speed"] = peak_speed
+        response["human_readable"]["peak_speed"] = format_bytes(peak_speed) + "/s"
+        
+    return response
