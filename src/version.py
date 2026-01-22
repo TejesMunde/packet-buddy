@@ -1,3 +1,47 @@
-"""Version information for PacketBuddy."""
+"""Version information for PacketBuddy.
 
-__version__ = "1.4.0"
+This module reads the version from the VERSION file at runtime,
+ensuring the version is always up-to-date even if the module is cached.
+"""
+
+from pathlib import Path
+
+
+def get_version() -> str:
+    """Read version from VERSION file.
+    
+    This function reads the version from the VERSION file at runtime,
+    which solves the Python module caching issue. Even if this module
+    is cached, the version will always be fresh from disk.
+    
+    Returns:
+        str: The current version string (e.g., "1.4.0")
+    """
+    try:
+        # Get the VERSION file path (project root)
+        version_file = Path(__file__).parent.parent / "VERSION"
+        
+        # Read and return the version, stripping whitespace
+        return version_file.read_text().strip()
+    except Exception as e:
+        # Fallback to a default version if file can't be read
+        print(f"Warning: Could not read VERSION file: {e}")
+        return "1.0.0"
+
+
+# For backward compatibility, provide __version__ as a property
+# that always reads fresh from disk
+__version__ = get_version()
+
+
+# Also provide a function for explicit fresh reads
+def get_fresh_version() -> str:
+    """Get a fresh version read from disk.
+    
+    Use this when you need to ensure you have the absolute latest version,
+    bypassing any potential caching.
+    
+    Returns:
+        str: The current version string
+    """
+    return get_version()
