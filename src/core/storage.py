@@ -247,6 +247,67 @@ class Storage:
             """, (self.device_id,))
             
             return [dict(row) for row in cursor.fetchall()]
+    
+    def get_all_daily_aggregates(self) -> List[Dict]:
+        """Get all daily aggregates with peak speeds for comprehensive exports."""
+        with self.get_connection() as conn:
+            cursor = conn.cursor()
+            cursor.execute("""
+                SELECT date, bytes_sent, bytes_received, peak_speed
+                FROM daily_aggregates
+                WHERE device_id = ?
+                ORDER BY date ASC
+            """, (self.device_id,))
+            
+            return [dict(row) for row in cursor.fetchall()]
+    
+    def get_monthly_summaries(self) -> List[Dict]:
+        """Get monthly summaries for year wrap-up."""
+        with self.get_connection() as conn:
+            cursor = conn.cursor()
+            cursor.execute("""
+                SELECT 
+                    strftime('%Y-%m', date) as month,
+                    SUM(bytes_sent) as bytes_sent,
+                    SUM(bytes_received) as bytes_received,
+                    MAX(peak_speed) as peak_speed,
+                    COUNT(*) as days_tracked
+                FROM daily_aggregates
+                WHERE device_id = ?
+                GROUP BY strftime('%Y-%m', date)
+                ORDER BY month ASC
+            """, (self.device_id,))
+            
+            return [dict(row) for row in cursor.fetchall()]
+    
+    def get_overall_peak_speed(self) -> int:
+        """Get the highest peak speed ever recorded."""
+        with self.get_connection() as conn:
+            cursor = conn.cursor()
+            cursor.execute("""
+                SELECT MAX(peak_speed) as max_peak
+                FROM daily_aggregates
+                WHERE device_id = ?
+            """, (self.device_id,))
+            
+            row = cursor.fetchone()
+            return row["max_peak"] if row and row["max_peak"] else 0
+    
+    def get_tracking_stats(self) -> Dict:
+        """Get overall tracking statistics."""
+        with self.get_connection() as conn:
+            cursor = conn.cursor()
+            cursor.execute("""
+                SELECT 
+                    MIN(date) as first_tracked_date,
+                    MAX(date) as last_tracked_date,
+                    COUNT(DISTINCT date) as total_days_tracked
+                FROM daily_aggregates
+                WHERE device_id = ?
+            """, (self.device_id,))
+            
+            row = cursor.fetchone()
+            return dict(row) if row else {}
 
 
 # Global storage instance

@@ -27,6 +27,9 @@ function setupEventListeners() {
     document.getElementById('export-btn').addEventListener('click', () => {
         window.location.href = '/api/export?format=csv';
     });
+    document.getElementById('html-export-btn').addEventListener('click', () => {
+        window.location.href = '/api/export?format=html';
+    });
     document.getElementById('llm-export-btn').addEventListener('click', () => {
         window.location.href = '/api/export/llm';
     });
@@ -171,9 +174,12 @@ async function loadTodayStats() {
         if (todayHeader) todayHeader.textContent = data.global ? 'Total Network' : 'This Device';
 
         // Update peak speed from server today stats if available
+        // FIX: Always use server's peak_speed as source of truth to prevent reset on page refresh
         if (displayData.peak_speed !== undefined && displayData.peak_speed !== null) {
-            // Always sync with server's stored peak speed (handles page refresh)
-            peakSpeed = Math.max(peakSpeed, displayData.peak_speed);
+            // Set peakSpeed to server value (this fixes the reset issue)
+            peakSpeed = displayData.peak_speed;
+
+            // Display the peak speed
             if (displayData.human_readable && displayData.human_readable.peak_speed) {
                 document.getElementById('peak-speed').textContent = displayData.human_readable.peak_speed;
             } else if (peakSpeed > 0) {
