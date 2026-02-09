@@ -125,10 +125,10 @@ if "!PYTHON_CMD!"=="" (
     echo.
     
     set "PYTHON_URL=https://www.python.org/ftp/python/!PYTHON_VERSION!/python-!PYTHON_VERSION!-amd64.exe"
-    set "PYTHON_INSTALLER=%TEMP%\python-installer.exe"
+    set "PYTHON_INSTALLER=!TEMP!\python-installer.exe"
     
     REM Download Python installer using curl (built into Windows 10+)
-    curl -L --progress-bar -o "%PYTHON_INSTALLER%" "!PYTHON_URL!"
+    curl -L --progress-bar -o "!PYTHON_INSTALLER!" "!PYTHON_URL!"
     if !errorLevel! neq 0 (
         color 0C
         echo.
@@ -147,7 +147,7 @@ if "!PYTHON_CMD!"=="" (
     echo Please wait while Python is being installed...
     
     REM Silent install with PATH configuration
-    "%PYTHON_INSTALLER%" /quiet InstallAllUsers=0 PrependPath=1 Include_pip=1 Include_test=0
+    "!PYTHON_INSTALLER!" /quiet InstallAllUsers=0 PrependPath=1 Include_pip=1 Include_test=0
     if !errorLevel! neq 0 (
         color 0C
         echo.
@@ -159,7 +159,7 @@ if "!PYTHON_CMD!"=="" (
     )
     
     REM Clean up installer
-    del "%PYTHON_INSTALLER%" 2>nul
+    del "!PYTHON_INSTALLER!" 2>nul
     
     echo [OK] Python installed successfully!
     echo.
